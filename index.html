@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#312e81">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
 <title>HR Knowledge Quiz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -321,20 +324,19 @@ body.playing #fx{display:none}
 <body>
 
 <!-- =====================================================================
-  ⚙️  CONFIG — แก้ค่า 4 ช่องนี้ก่อนใช้งานจริง (ถ้าเว้นว่าง จะเป็นโหมดทดลอง)
+  ⚙️  CONFIG — ผู้ดูแลระบบ (เข้าหน้า Admin ได้) ต้องกรอกรหัสพนักงานและชื่อตรงตามนี้
 ====================================================================== -->
 <script>
 const CONFIG = {
-  // Application (client) ID จาก Azure Portal > Entra ID > App registrations (ประเภท Single-page application)
-  clientId: '',
-  // Directory (tenant) ID ขององค์กร
-  tenantId: '',
-  // ลิงก์แชร์ไฟล์ Excel บน SharePoint / OneDrive (ไฟล์เปล่าก็ได้ ระบบจะสร้างชีตให้เอง)
-  excelShareUrl: '',
-  // อีเมลผู้ดูแลระบบ (เข้าหน้า Admin ได้)
-  adminEmails: ['hr.admin@yourcompany.com'],
-  // (ไม่บังคับ) จำกัดโดเมนอีเมลที่เล่นได้ เช่น ['yourcompany.com']
-  allowedDomains: [],
+  admins: [
+    { id: '2607177', name: 'วิทยา' },
+  ],
+  // รหัสผ่านหน้า Admin — เก็บเป็นค่า hash (PBKDF2-SHA256) ไม่มีรหัสผ่านจริงอยู่ในไฟล์
+  // เปลี่ยนรหัสผ่านได้ที่ Admin → แท็บ 🔌 ระบบ → “เปลี่ยนรหัสผ่าน Admin”
+  adminPassword: { salt: '8dc7f6c472b719105543d60beb6af7a5', hash: 'ccfd163f6c4b6f8e05eb86857e84f5f310d32ae2929717aa96e0e19440634cec', iterations: 210000 },
+  adminIdleMinutes: 30,      // ล็อกหน้า Admin อัตโนมัติเมื่อไม่ได้ใช้งาน (นาที)
+  maxPasswordTries: 5,       // ใส่รหัสผิดเกินจำนวนนี้ จะถูกล็อก
+  lockMinutes: 15,           // ระยะเวลาล็อก (นาที)
 };
 </script>
 
@@ -354,19 +356,17 @@ const CONFIG = {
   </section>
   <section class="login-card">
     <h2>ยินดีต้อนรับ 👋</h2>
-    <p class="muted">เข้าสู่ระบบด้วยบัญชี Microsoft ขององค์กรเพื่อเริ่มเล่น</p>
+    <p class="muted">กรอกรหัสพนักงานและชื่อเพื่อเริ่มเล่น</p>
     <div id="loginErr" class="alert hidden"></div>
-    <button id="msBtn" class="ms-btn" type="button">
-      <svg viewBox="0 0 21 21" aria-hidden="true"><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg>
-      <span>Sign in with Microsoft</span>
-    </button>
-    <form id="demoForm" class="demo-box hidden">
-      <span class="tag">โหมดทดลอง — ยังไม่ได้ตั้งค่า Microsoft (ข้อมูลเก็บในเครื่องนี้เท่านั้น)</span>
-      <label class="field"><span>ชื่อ-นามสกุล</span><input name="name" required autocomplete="name"></label>
-      <label class="field"><span>อีเมล</span><input name="email" type="email" required autocomplete="email"></label>
-      <button class="btn btn-primary btn-block" type="submit">เข้าสู่ระบบ (ทดลอง)</button>
+    <form id="loginForm" novalidate>
+      <label class="field"><span>รหัสพนักงาน (ตัวเลข 7 หลัก)</span>
+        <input name="empId" id="empId" inputmode="numeric" pattern="[0-9]{7}" maxlength="7" autocomplete="off" placeholder="เช่น 2601234" required></label>
+      <label class="field"><span>ชื่อ-นามสกุล (ภาษาไทย)</span>
+        <input name="name" id="empName" lang="th" maxlength="60" autocomplete="off" placeholder="เช่น สมชาย ใจดี" required></label>
+      <button class="btn btn-primary btn-block btn-lg" type="submit">เข้าสู่ระบบ</button>
+      <p class="small muted" id="storageNote" style="margin-top:10px;text-align:center"></p>
     </form>
-    <p class="fineprint">ระบบจะบันทึกชื่อ อีเมล และผลคะแนนของคุณลงไฟล์ Excel ของฝ่าย HR</p>
+    <p class="fineprint">ระบบจะบันทึกรหัสพนักงาน ชื่อ และผลคะแนนของคุณเพื่อใช้ในการพัฒนาพนักงาน</p>
   </section>
 </main>
 </div>
@@ -481,6 +481,7 @@ const CONFIG = {
   <div class="who"><div class="avatar">⚙️</div><div><div class="who-name">Admin Control Center</div><div class="small muted" id="adminEmail"></div></div></div>
   <div class="top-actions">
     <button class="btn btn-ghost btn-sm" id="toQuiz">🎮 หน้าเกม</button>
+    <button class="btn btn-light btn-sm" id="lockBtn" title="ล็อกหน้า Admin">🔒</button>
     <button class="btn btn-light btn-sm" id="logout2">ออก</button>
   </div>
 </header>
@@ -515,7 +516,7 @@ const CONFIG = {
 
   <section data-pane="results" class="hidden">
     <div class="toolbar">
-      <input id="search" placeholder="🔍 ค้นหาชื่อ / อีเมล">
+      <input id="search" placeholder="🔍 ค้นหาชื่อ / รหัสพนักงาน">
       <select id="filterMode" class="btn btn-light btn-sm"><option value="">ทุกโหมด</option><option value="classic">🎯 Classic</option><option value="attack">⚡ Time Attack</option><option value="survival">❤️ Survival</option></select>
       <select id="filterResult" class="btn btn-light btn-sm"><option value="">ผลทั้งหมด</option><option>ผ่าน</option><option>ไม่ผ่าน</option></select>
       <button class="btn btn-primary btn-sm" id="exportXlsx">⬇️ ดาวน์โหลด Excel</button>
@@ -525,7 +526,7 @@ const CONFIG = {
     <p class="small muted" style="margin-bottom:10px">ไฟล์ที่ดาวน์โหลดมี 4 ชีต: Scores · Answers (รายข้อ) · Summary (รายคน) · QuestionStats — ลบรายการเพื่อคืนสิทธิ์เล่นให้พนักงานได้</p>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>วันที่-เวลา</th><th>โหมด</th><th>ชุด</th><th>ชื่อ</th><th>อีเมล</th><th class="num">คะแนน</th><th class="num">ถูก</th><th class="num">%</th><th>ผล</th><th class="num">เวลา</th><th class="num">ครั้งที่</th><th></th></tr></thead>
+        <thead><tr><th>วันที่-เวลา</th><th>โหมด</th><th>ชุด</th><th>ชื่อ</th><th>รหัสพนักงาน</th><th class="num">คะแนน</th><th class="num">ถูก</th><th class="num">%</th><th>ผล</th><th class="num">เวลา</th><th class="num">ครั้งที่</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table>
     </div>
@@ -615,9 +616,28 @@ const CONFIG = {
 
   <section data-pane="system" class="hidden">
     <div class="card"><h3>สถานะการเชื่อมต่อ</h3><div class="kv" id="sysInfo"></div></div>
-    <div class="card"><h3>โหมดทดลอง</h3>
-      <p class="small muted" style="margin-bottom:12px">ในโหมดทดลอง ข้อมูลทั้งหมดอยู่ในเบราว์เซอร์เครื่องนี้เท่านั้น — ใส่ค่าใน <code>CONFIG</code> ด้านบนของไฟล์เพื่อเชื่อม Microsoft และ Excel บน SharePoint</p>
-      <button class="btn btn-danger btn-sm" id="resetDemo">รีเซ็ตข้อมูลทดลองทั้งหมด</button>
+    <div class="card"><h3>🔑 เปลี่ยนรหัสผ่าน Admin</h3>
+      <p class="small muted" style="margin-bottom:10px">ตั้งรหัสใหม่อย่างน้อย 10 ตัวอักษร ระบบจะสร้างค่า hash ให้นำไปแทนบรรทัด <code>adminPassword</code> ในไฟล์ index.html แล้วอัปโหลดใหม่</p>
+      <label class="field"><span>รหัสผ่านใหม่</span><input type="password" id="newPw1" autocomplete="new-password"></label>
+      <label class="field"><span>ยืนยันรหัสผ่านใหม่</span><input type="password" id="newPw2" autocomplete="new-password"></label>
+      <button class="btn btn-primary btn-sm" id="makeHash">สร้างค่า hash</button>
+      <textarea id="hashOut" class="hidden" rows="3" readonly style="width:100%;margin-top:10px;font-family:monospace;font-size:.78rem;padding:.6rem;border:1px solid var(--line);border-radius:10px"></textarea>
+      <button class="btn btn-light btn-sm hidden" id="copyHash" style="margin-top:6px">📋 คัดลอก</button>
+    </div>
+    <div class="card"><h3>🛡️ มาตรการความปลอดภัย</h3>
+      <ul class="hist small">
+        <li><span>รหัสผ่าน Admin เก็บเป็น hash (PBKDF2-SHA256)</span><b>✅</b></li>
+        <li><span>ล็อกเมื่อใส่รหัสผิดเกินกำหนด</span><b id="secLock"></b></li>
+        <li><span>ล็อกหน้า Admin อัตโนมัติเมื่อไม่ใช้งาน</span><b id="secIdle"></b></li>
+        <li><span>Content Security Policy (บล็อกสคริปต์/การส่งข้อมูลออกนอกเว็บ)</span><b>✅</b></li>
+        <li><span>ป้องกันการฝังเว็บในหน้าอื่น (clickjacking)</span><b>✅</b></li>
+        <li><span>กรองข้อความทุกช่องก่อนแสดงผล (กัน XSS)</span><b>✅</b></li>
+        <li><span>กันสูตรอันตรายในไฟล์ Excel ที่ดาวน์โหลด</span><b>✅</b></li>
+      </ul>
+    </div>
+    <div class="card"><h3>ข้อมูลในเครื่องนี้</h3>
+      <p class="small muted" style="margin-bottom:12px">ตอนนี้คะแนน คำถาม และการตั้งค่าถูกเก็บในเบราว์เซอร์ของแต่ละเครื่อง — ผู้ดูแลระบบจะเห็นเฉพาะคะแนนที่เล่นบนเครื่องนี้</p>
+      <button class="btn btn-danger btn-sm" id="resetDemo">รีเซ็ตข้อมูลทั้งหมดในเครื่องนี้</button>
     </div>
   </section>
 </main>
@@ -1909,10 +1929,10 @@ module.exports = QRCode;
 
 };
 return {QRCode:req('index'),Level:req('QRErrorCorrectLevel')};})();</script>
-<script src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js" integrity="sha384-PARf28kmic36Ve+O3DnUerRXFtOQ7ZDqRDGpLcbljly5/N39T2OV3kt3QsWOKeAX" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 'use strict';
+if (window.top !== window.self) { try { window.top.location = window.self.location; } catch { document.documentElement.innerHTML = ''; throw new Error('framed'); } }
 /* =================================================================
    DATA
 ================================================================= */
@@ -2635,8 +2655,7 @@ const DEFAULT_SETTINGS = {
   theme: 'auto', themeEffects: true, themeMap: '1:newyear,2:valentine,3:stpatrick,4:songkran,5:default,6:default,7:default,8:default,9:midautumn,10:halloween,11:loykrathong,12:christmas',
   modeAttack: true, attackSeconds: 60, modeSurvival: true, survivalLives: 3, modePractice: true,
 };
-const MODE = CONFIG.clientId && CONFIG.excelShareUrl ? 'ms' : 'demo';
-const SCOPES = ['User.Read', 'Files.ReadWrite.All'];
+const MODE = 'local';
 const LETTERS = 'ABCD';
 
 /* =================================================================
@@ -2661,14 +2680,15 @@ const LS = {
   set(k, v) { const s = JSON.stringify(v); MEM[k] = s; if (LS_OK) try { localStorage.setItem('hrq_' + k, s); } catch {} },
   del(k) { delete MEM[k]; if (LS_OK) try { localStorage.removeItem('hrq_' + k); } catch {} },
 };
-function dialog({ text, input = false, ok = 'ตกลง', cancel = 'ยกเลิก', danger = false }) {
+function dialog({ text, input = false, ok = 'ตกลง', cancel = 'ยกเลิก', danger = false, password = false }) {
   return new Promise(res => {
     const back = document.createElement('div'); back.className = 'dialog-back';
-    back.innerHTML = `<div class="dialog"><p></p>${input ? '<input>' : ''}<div class="row">${cancel ? `<button class="btn btn-light btn-sm" data-r="0">${cancel}</button>` : ''}<button class="btn ${danger ? 'btn-danger' : 'btn-primary'} btn-sm" data-r="1">${ok}</button></div></div>`;
+    back.innerHTML = `<div class="dialog"><p></p>${input ? `<input ${password ? 'type="password" autocomplete="current-password"' : ''}>` : ''}<div class="row">${cancel ? `<button class="btn btn-light btn-sm" data-r="0">${cancel}</button>` : ''}<button class="btn ${danger ? 'btn-danger' : 'btn-primary'} btn-sm" data-r="1">${ok}</button></div></div>`;
     back.querySelector('p').textContent = text;
     back.addEventListener('click', e => { const r = e.target.dataset.r; if (r === undefined) return; back.remove(); res(r === '1' ? (input ? back.querySelector('input').value : true) : (input ? null : false)); });
     document.body.appendChild(back);
-    back.querySelector('input')?.focus();
+    const inp = back.querySelector('input');
+    if (inp) { inp.focus(); inp.addEventListener('keydown', e => { if (e.key === 'Enter') back.querySelector('[data-r="1"]').click(); }); }
   });
 }
 function mount(tplId) { const app = $('#app'); app.innerHTML = ''; app.appendChild($(tplId).content.cloneNode(true)); bindSettings(); applyTheme(); }
@@ -2750,7 +2770,7 @@ function normSettings(o) {
    STORAGE — Demo (localStorage)
 ================================================================= */
 const DemoStore = {
-  label: 'โหมดทดลอง (เก็บในเบราว์เซอร์นี้)',
+  label: 'เก็บข้อมูลในเบราว์เซอร์ของเครื่องนี้',
   async init() {},
   async getSettings() { return normSettings(LS.get('settings', {})); },
   async saveSettings(s) { LS.set('settings', s); },
@@ -2768,9 +2788,9 @@ const DemoStore = {
 ================================================================= */
 const COLS = {
   Scores: { sheet: 'Scores', table: 'tblScores', keys: ['attemptId', 'timestamp', 'name', 'email', 'points', 'correct', 'total', 'percent', 'result', 'durationSec', 'attemptNo', 'bestStreak', 'mode', 'set'],
-    head: ['Attempt ID', 'วันที่-เวลา', 'ชื่อ-นามสกุล', 'อีเมล', 'คะแนน', 'ตอบถูก', 'จำนวนข้อ', 'ร้อยละ', 'ผล', 'เวลาที่ใช้ (วินาที)', 'ครั้งที่', 'Streak สูงสุด', 'โหมด', 'ชุดข้อสอบ'] },
+    head: ['Attempt ID', 'วันที่-เวลา', 'ชื่อ-นามสกุล', 'รหัสพนักงาน', 'คะแนน', 'ตอบถูก', 'จำนวนข้อ', 'ร้อยละ', 'ผล', 'เวลาที่ใช้ (วินาที)', 'ครั้งที่', 'Streak สูงสุด', 'โหมด', 'ชุดข้อสอบ'] },
   Answers: { sheet: 'Answers', table: 'tblAnswers', keys: ['attemptId', 'timestamp', 'email', 'name', 'questionNo', 'questionId', 'category', 'question', 'chosen', 'correctAnswer', 'isCorrect', 'timeSec', 'points'],
-    head: ['Attempt ID', 'วันที่-เวลา', 'อีเมล', 'ชื่อ-นามสกุล', 'ข้อที่', 'Question ID', 'หมวด', 'คำถาม', 'คำตอบที่เลือก', 'คำตอบที่ถูก', 'ถูก/ผิด', 'เวลาตอบ (วินาที)', 'คะแนนข้อนี้'] },
+    head: ['Attempt ID', 'วันที่-เวลา', 'รหัสพนักงาน', 'ชื่อ-นามสกุล', 'ข้อที่', 'Question ID', 'หมวด', 'คำถาม', 'คำตอบที่เลือก', 'คำตอบที่ถูก', 'ถูก/ผิด', 'เวลาตอบ (วินาที)', 'คะแนนข้อนี้'] },
   Questions: { sheet: 'Questions', table: 'tblQuestions', keys: ['id', 'category', 'text', 'A', 'B', 'C', 'D', 'answer', 'explanation', 'active', 'type', 'set'],
     head: ['ID', 'หมวด', 'คำถาม', 'ตัวเลือก A', 'ตัวเลือก B', 'ตัวเลือก C', 'ตัวเลือก D', 'คำตอบที่ถูก (A-D)', 'คำอธิบาย', 'ใช้งาน (Y/N)', 'ประเภท (mc/tf/num)', 'ชุดข้อสอบ (A/B/C)'] },
   Settings: { sheet: 'Settings', table: 'tblSettings', keys: ['key', 'value'], head: ['Key', 'Value'] },
@@ -2794,105 +2814,10 @@ function rowToQ(o) {
   return { ...base, choices: kept.map(x => x.c), answer };
 }
 
-let pca = null;
-const GraphStore = {
-  label: 'Microsoft 365 → Excel บน SharePoint/OneDrive',
-  base: null, webUrl: null, fileName: null,
-  async token() {
-    const account = pca.getActiveAccount();
-    try { return (await pca.acquireTokenSilent({ scopes: SCOPES, account })).accessToken; }
-    catch (e) { await pca.acquireTokenRedirect({ scopes: SCOPES, account }); throw e; }
-  },
-  async call(method, path, body, attempt = 0) {
-    const url = path.startsWith('https://') ? path : this.base + path;
-    const r = await fetch(url, { method, headers: { Authorization: 'Bearer ' + await this.token(), 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
-    if ((r.status === 429 || r.status === 409 || r.status >= 500) && attempt < 4) { await sleep(800 * (attempt + 1)); return this.call(method, path, body, attempt + 1); }
-    if (r.status === 204) return null;
-    const d = await r.json().catch(() => null);
-    if (!r.ok) { const e = new Error(d?.error?.message || 'Microsoft Graph error ' + r.status); e.status = r.status; throw e; }
-    return d;
-  },
-  async init() {
-    const b64 = btoa(unescape(encodeURIComponent(CONFIG.excelShareUrl.trim()))).replace(/=+$/, '').replace(/\//g, '_').replace(/\+/g, '-');
-    const item = await this.call('GET', 'https://graph.microsoft.com/v1.0/shares/u!' + b64 + '/driveItem');
-    this.base = `https://graph.microsoft.com/v1.0/drives/${item.parentReference.driveId}/items/${item.id}/workbook`;
-    this.webUrl = item.webUrl; this.fileName = item.name;
-    const have = new Set((await this.call('GET', '/tables?$select=name')).value.map(t => t.name));
-    const missing = Object.keys(COLS).filter(k => !have.has(COLS[k].table));
-    for (const k of Object.keys(COLS).filter(k => have.has(COLS[k].table))) { // add columns introduced by newer versions
-      const n = (await this.call('GET', `/tables/${COLS[k].table}/columns?$select=name`)).value.length;
-      for (let i = n; i < COLS[k].head.length; i++) await this.call('POST', `/tables/${COLS[k].table}/columns/add`, { name: COLS[k].head[i] });
-    }
-    if (!missing.length) return;
-    if (!ME.isAdmin) throw new Error('ไฟล์ Excel ยังไม่ได้ตั้งค่า — ให้ผู้ดูแลระบบเข้าสู่ระบบก่อน 1 ครั้งเพื่อสร้างชีตอัตโนมัติ');
-    for (const k of ['Scores', 'Answers', 'Questions', 'Settings'].filter(k => missing.includes(k))) {
-      const seed = k === 'Questions' ? DEFAULT_QUESTIONS.map(qToRow) : k === 'Settings' ? Object.entries(DEFAULT_SETTINGS).map(([a, b]) => [a, String(b)]) : [];
-      await this.createTable(k, seed);
-    }
-  },
-  async createTable(k, rows = []) {
-    const t = COLS[k], end = colLetter(t.head.length), sh = encodeURIComponent(t.sheet);
-    const sheets = (await this.call('GET', '/worksheets?$select=name')).value.map(w => w.name);
-    if (!sheets.includes(t.sheet)) await this.call('POST', '/worksheets/add', { name: t.sheet });
-    await this.call('PATCH', `/worksheets/${sh}/range(address='A1:${end}1')`, { values: [t.head] });
-    const tb = await this.call('POST', `/worksheets/${sh}/tables/add`, { address: `${t.sheet}!A1:${end}1`, hasHeaders: true });
-    await this.call('PATCH', `/tables/${encodeURIComponent(tb.id)}`, { name: t.table, style: 'TableStyleMedium2' });
-    if (rows.length) {
-      await this.call('POST', `/tables/${t.table}/rows/add`, { values: rows });
-      const first = await this.call('GET', `/tables/${t.table}/rows/itemAt(index=0)`).catch(() => null);
-      if (first && !first.values[0].some(x => x !== '' && x !== null)) await this.call('DELETE', `/tables/${t.table}/rows/itemAt(index=0)`).catch(() => {}); // remove blank first row
-    }
-  },
-  async rows(k) {
-    const t = COLS[k]; const out = [];
-    let url = `/tables/${t.table}/rows`;
-    while (url) {
-      const d = await this.call('GET', url);
-      for (const r of d.value) {
-        const v = r.values[0];
-        if (!v.some(x => x !== '' && x !== null)) continue;
-        const o = { _index: r.index }; t.keys.forEach((key, i) => { o[key] = NUMERIC.has(key) ? Number(v[i]) || 0 : (v[i] ?? ''); });
-        if ('email' in o) o.email = String(o.email).toLowerCase();
-        if ('attemptId' in o) o.attemptId = String(o.attemptId);
-        out.push(o);
-      }
-      url = d['@odata.nextLink'] || null;
-    }
-    return out;
-  },
-  async append(k, objs) { if (objs.length) await this.call('POST', `/tables/${COLS[k].table}/rows/add`, { values: objs.map(o => COLS[k].keys.map(key => o[key] ?? '')) }); },
-  async replaceAll(k, rows) {
-    await this.call('DELETE', `/worksheets/${encodeURIComponent(COLS[k].sheet)}`).catch(() => {});
-    await this.createTable(k, rows);
-  },
-  async deleteRows(k, indexes) {
-    const all = await this.call('GET', `/tables/${COLS[k].table}/rows?$select=index`);
-    let total = all.value.length;
-    for (const i of [...indexes].sort((a, b) => b - a)) {
-      if (total <= 1) await this.call('PATCH', `/tables/${COLS[k].table}/rows/itemAt(index=${i})/range`, { values: [COLS[k].keys.map(() => '')] });
-      else { await this.call('DELETE', `/tables/${COLS[k].table}/rows/itemAt(index=${i})`); total--; }
-    }
-  },
-  async getSettings() { const o = {}; (await this.rows('Settings')).forEach(r => { o[r.key] = r.value; }); return normSettings(o); },
-  async saveSettings(s) { await this.replaceAll('Settings', Object.entries(s).map(([a, b]) => [a, String(b)])); },
-  async getQuestions() { const q = (await this.rows('Questions')).map(rowToQ).filter(Boolean); return q.length ? q : DEFAULT_QUESTIONS; },
-  async saveQuestions(q) { await this.replaceAll('Questions', q.map(qToRow)); },
-  async getAttempts() { return this.rows('Scores'); },
-  async getAnswers() { return this.rows('Answers'); },
-  async addAttempt(a, rows) { await this.append('Scores', [a]); await this.append('Answers', rows); },
-  async deleteAttempt(id) {
-    const s = (await this.rows('Scores')).filter(r => r.attemptId === id).map(r => r._index);
-    await this.deleteRows('Scores', s);
-    const a = (await this.rows('Answers')).filter(r => r.attemptId === id).map(r => r._index);
-    await this.deleteRows('Answers', a);
-  },
-  async clearAll() { await this.replaceAll('Scores', []); await this.replaceAll('Answers', []); },
-};
-
 /* =================================================================
    APP STATE
 ================================================================= */
-const STORE = MODE === 'ms' ? GraphStore : DemoStore;
+const STORE = DemoStore;
 let ME = null, SETTINGS = { ...DEFAULT_SETTINGS }, QUESTIONS = [], ATTEMPTS = [], ANSWERS = [];
 
 async function reloadData(withAnswers = false) {
@@ -2900,78 +2825,99 @@ async function reloadData(withAnswers = false) {
   if (withAnswers) ANSWERS = await STORE.getAnswers();
 }
 
+// ---- employee-ID login ----
+const normName = n => String(n || '').normalize('NFC').replace(/\s+/g, ' ').trim();
+const isThaiName = n => /^[\u0E00-\u0E7F]+( [\u0E00-\u0E7F]+)*$/.test(n) && n.length >= 2;
+const adminFor = id => CONFIG.admins.find(a => a.id === id);
+const nameMatches = (name, adminName) => { const n = normName(name), a = normName(adminName); return n === a || n.split(' ')[0] === a; };
+function checkLogin(id, name) {
+  id = String(id || '').trim(); name = normName(name);
+  if (!/^\d{7}$/.test(id)) return { error: 'รหัสพนักงานต้องเป็นตัวเลข 7 หลัก' };
+  if (!isThaiName(name)) return { error: 'กรุณากรอกชื่อเป็นภาษาไทย (ไม่มีตัวเลขหรือภาษาอังกฤษ)' };
+  const adm = adminFor(id);
+  if (adm && !nameMatches(name, adm.name)) return { error: 'รหัสพนักงานและชื่อไม่ตรงกัน' };
+  return { user: { id, email: id, name, canAdmin: !!adm, isAdmin: false } };
+}
+
+// ---- admin password (PBKDF2-SHA256 via WebCrypto) + lockout + idle auto-lock ----
+const hexToBytes = h => new Uint8Array(h.match(/../g).map(x => parseInt(x, 16)));
+async function pbkdf2Hex(pw, saltHex, iterations) {
+  if (!window.crypto?.subtle) throw new Error('เบราว์เซอร์นี้ไม่รองรับการตรวจรหัสผ่าน (ต้องเปิดผ่าน https://)');
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: hexToBytes(saltHex), iterations }, key, 256);
+  return [...new Uint8Array(bits)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+const safeEqual = (a, b) => { if (a.length !== b.length) return false; let d = 0; for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i); return d === 0; };
+function lockState() { const s = LS.get('pwLock', { fails: 0, until: 0 }); return s; }
+async function verifyAdminPassword(pw) {
+  const st = lockState();
+  if (st.until > Date.now()) throw new Error(`ใส่รหัสผ่านผิดหลายครั้ง — ลองใหม่ได้ในอีก ${Math.ceil((st.until - Date.now()) / 60000)} นาที`);
+  const c = CONFIG.adminPassword;
+  const ok = safeEqual(await pbkdf2Hex(pw, c.salt, c.iterations), c.hash);
+  if (ok) { LS.set('pwLock', { fails: 0, until: 0 }); return true; }
+  const fails = st.fails + 1;
+  const lock = fails >= CONFIG.maxPasswordTries;
+  LS.set('pwLock', { fails: lock ? 0 : fails, until: lock ? Date.now() + CONFIG.lockMinutes * 60000 : 0 });
+  throw new Error(lock ? `ใส่รหัสผ่านผิด ${CONFIG.maxPasswordTries} ครั้ง — ล็อก ${CONFIG.lockMinutes} นาที` : `รหัสผ่านไม่ถูกต้อง (เหลือ ${CONFIG.maxPasswordTries - fails} ครั้ง)`);
+}
+let ADMIN_SEEN = 0;
+async function unlockAdmin() {
+  if (!ME?.canAdmin) return false;
+  if (ME.isAdmin) return true;
+  const pw = await dialog({ text: '🔒 ใส่รหัสผ่านผู้ดูแลระบบ', input: true, password: true, ok: 'ปลดล็อก' });
+  if (pw === null || pw === '') return false;
+  try { await verifyAdminPassword(pw); ME.isAdmin = true; ADMIN_SEEN = Date.now(); toast('🔓 ปลดล็อกหน้า Admin แล้ว'); return true; }
+  catch (e) { await dialog({ text: e.message, cancel: '' }); return false; }
+}
+function lockAdmin(msg) { if (!ME) return; ME.isAdmin = false; if (location.hash === '#admin') location.hash = ''; else if (msg) showQuiz(); if (msg) toast(msg); }
+['pointerdown', 'keydown', 'scroll'].forEach(ev => addEventListener(ev, () => { if (ME?.isAdmin) ADMIN_SEEN = Date.now(); }, { passive: true }));
+setInterval(() => { if (ME?.isAdmin && Date.now() - ADMIN_SEEN > CONFIG.adminIdleMinutes * 60000) lockAdmin('🔒 ล็อกหน้า Admin อัตโนมัติ เพราะไม่มีการใช้งาน'); }, 30000);
+document.addEventListener('visibilitychange', () => { if (document.hidden && ME?.isAdmin) ADMIN_SEEN = Math.min(ADMIN_SEEN, Date.now()); });
+
 async function boot() {
-  if (MODE === 'ms') {
-    if (location.protocol === 'file:') return showLogin('เปิดไฟล์จากเครื่องโดยตรง (file://) ใช้ Microsoft login ไม่ได้ — ต้องนำไฟล์ขึ้นเว็บ https:// (หรือ http://localhost) และใส่ลิงก์นั้นเป็น Redirect URI ใน Azure');
-    if (!window.msal) return showLogin('โหลดไลบรารี Microsoft ไม่สำเร็จ — ตรวจสอบอินเทอร์เน็ต หรือเครือข่ายบริษัทอาจบล็อก alcdn.msauth.net');
-    pca = new msal.PublicClientApplication({
-      auth: { clientId: CONFIG.clientId, authority: `https://login.microsoftonline.com/${CONFIG.tenantId || 'organizations'}`, redirectUri: location.origin + location.pathname },
-      cache: { cacheLocation: 'localStorage' },
-    });
-    let res = null;
-    try { res = await pca.handleRedirectPromise(); } catch (e) { return showLogin(explainMsalError(e)); }
-    const acc = res?.account || pca.getActiveAccount() || pca.getAllAccounts()[0];
-    if (acc) { pca.setActiveAccount(acc); ME = { name: acc.name || acc.username, email: acc.username.toLowerCase() }; }
-  } else ME = LS.get('demoUser', null);
-
-  if (!ME) return showLogin();
-  if (CONFIG.allowedDomains.length && !CONFIG.allowedDomains.map(d => d.toLowerCase()).includes(ME.email.split('@')[1])) {
-    return showLogin('บัญชีนี้ไม่ได้รับอนุญาต กรุณาใช้อีเมลขององค์กร', true);
-  }
-  ME.isAdmin = MODE === 'demo' ? true : CONFIG.adminEmails.map(e => e.toLowerCase()).includes(ME.email);
-
-  setLoading('กำลังเชื่อมต่อข้อมูล…');
+  const saved = LS.get('user', null);
+  const res = saved ? checkLogin(saved.id, saved.name) : null;
+  if (!res || !res.user) { if (saved) LS.del('user'); return showLogin(); }
+  ME = res.user;
+  setLoading('กำลังโหลดข้อมูล…');
   try { await STORE.init(); await reloadData(); }
   catch (e) { console.error(e); setLoading(''); $('#app .loading div').innerHTML = `<div style="max-width:340px;text-align:center;padding:20px"><div style="font-size:2.4rem">⚠️</div><p style="margin:10px 0 16px">${esc(e.message)}</p><button class="btn btn-light" onclick="logout()">ออกจากระบบ</button></div>`; return; }
   flushPending();
   route();
 }
-function explainMsalError(e) {
-  const m = String(e.errorMessage || e.message || e);
-  if (/AADSTS50011/.test(m)) return 'Redirect URI ไม่ตรง — ใน Azure ให้เพิ่ม "' + location.origin + location.pathname + '" ใต้ Single-page application';
-  if (/AADSTS9002326|AADSTS700054|Cross-origin token redemption/.test(m)) return 'แอปใน Azure ต้องเป็นประเภท "Single-page application" (ไม่ใช่ Web)';
-  if (/AADSTS65001|consent/i.test(m)) return 'ยังไม่ได้รับอนุญาตสิทธิ์ — ให้ IT กด "Grant admin consent" ใน API permissions';
-  if (/AADSTS50020|AADSTS90072/.test(m)) return 'บัญชีนี้ไม่อยู่ในองค์กร (tenant) ที่กำหนด';
-  if (/AADSTS700016/.test(m)) return 'ไม่พบ clientId นี้ใน tenant — ตรวจ clientId / tenantId ใน CONFIG';
-  return 'เข้าสู่ระบบไม่สำเร็จ: ' + m;
-}
 window.addEventListener('hashchange', () => { if (ME) route(); });
-function route() { if (location.hash === '#admin' && ME.isAdmin) showAdmin(); else showQuiz(); }
-
-async function logout() {
-  if (MODE === 'ms' && pca) { await pca.logoutRedirect({ account: pca.getActiveAccount(), postLogoutRedirectUri: location.origin + location.pathname }); }
-  else { LS.del('demoUser'); location.hash = ''; location.reload(); }
+async function route() {
+  if (location.hash === '#admin') {
+    if (ME.isAdmin || await unlockAdmin()) return showAdmin();
+    location.hash = ''; return;
+  }
+  showQuiz();
 }
+
+async function logout() { LS.del('user'); ME = null; location.hash = ''; location.reload(); }
 window.logout = logout;
 
 /* =================================================================
    1. LOGIN
 ================================================================= */
-async function showLogin(err, forceLogout = false) {
-  if (MODE === 'demo') SETTINGS = await DemoStore.getSettings();
-  else SETTINGS = normSettings({ ...SETTINGS, ...LS.get('themeCache', {}) });
+async function showLogin(err) {
+  SETTINGS = await DemoStore.getSettings();
   document.body.classList.remove('playing');
   mount('#tpl-login');
   $('#chips').innerHTML = [`📝 ${SETTINGS.questionsPerQuiz} ข้อ`, `⏱️ ${SETTINGS.timePerQuestion} วิ/ข้อ`, `🏆 ผ่าน ${SETTINGS.passPercent}%`].map(c => `<span>${c}</span>`).join('');
-  if (err) { $('#loginErr').textContent = err; $('#loginErr').classList.remove('hidden'); }
-  if (MODE === 'demo') {
-    $('#demoForm').classList.remove('hidden'); $('#msBtn').style.opacity = .45;
-    if (!LS_OK) $('#demoForm .tag').textContent = 'โหมดทดลอง — เบราว์เซอร์นี้บล็อกการเก็บข้อมูล ข้อมูลจะหายเมื่อปิดหน้า (เปิดด้วย Chrome/Edge เพื่อเก็บถาวร)';
-  }
-  $('#msBtn').onclick = async () => {
-    const showErr = m => { $('#loginErr').textContent = m; $('#loginErr').classList.remove('hidden'); };
-    if (MODE === 'demo') return showErr('ยังไม่ได้ตั้งค่า Microsoft — ตอนนี้ใช้ฟอร์ม "โหมดทดลอง" ด้านล่างได้เลย หรือใส่ clientId, tenantId และ excelShareUrl ใน CONFIG');
-    if (!pca) return; // file:// or library failed — message already shown
-    if (forceLogout) return logout();
-    try { await pca.loginRedirect({ scopes: SCOPES, prompt: 'select_account' }); }
-    catch (e) { showErr('เปิดหน้า Microsoft login ไม่สำเร็จ: ' + (e.errorMessage || e.message)); }
-  };
-  $('#demoForm').onsubmit = e => {
+  const showErr = m => { $('#loginErr').textContent = m; $('#loginErr').classList.toggle('hidden', !m); };
+  if (err) showErr(err);
+  if (!LS_OK) $('#storageNote').textContent = '⚠️ เบราว์เซอร์นี้บล็อกการเก็บข้อมูล คะแนนจะหายเมื่อปิดหน้า — แนะนำเปิดด้วย Chrome หรือ Safari';
+  const id = $('#empId');
+  id.addEventListener('input', () => { const v = id.value.replace(/\D/g, '').slice(0, 7); if (v !== id.value) id.value = v; });
+  $('#loginForm').onsubmit = e => {
     e.preventDefault();
-    const f = Object.fromEntries(new FormData(e.target));
-    LS.set('demoUser', { name: f.name.trim(), email: f.email.trim().toLowerCase() });
+    const r = checkLogin(id.value, $('#empName').value);
+    if (r.error) { showErr(r.error); $('#loginForm').classList.add('shake'); setTimeout(() => $('#loginForm')?.classList.remove('shake'), 400); return; }
+    LS.set('user', { id: r.user.id, name: r.user.name });
     boot();
   };
+  setTimeout(() => id.focus(), 50);
 }
 
 /* =================================================================
@@ -3013,7 +2959,7 @@ function showQuiz() {
   mount('#tpl-quiz');
   $('#userName').textContent = ME.name;
   $('#avatar').textContent = (ME.name || '?').trim().charAt(0).toUpperCase();
-  if (ME.isAdmin) { $('#toAdmin').classList.remove('hidden'); $('#toAdmin').onclick = () => { location.hash = 'admin'; }; }
+  if (ME.canAdmin) { $('#toAdmin').classList.remove('hidden'); $('#toAdmin').textContent = ME.isAdmin ? '⚙️ Admin' : '🔒 Admin'; $('#toAdmin').onclick = () => { location.hash = 'admin'; }; }
   $('#logout').onclick = logout;
   $('#timerBar').style.strokeDasharray = C_TIMER;
   $('#rRing').style.strokeDasharray = C_RING; $('#rRing').style.strokeDashoffset = C_RING;
@@ -3272,7 +3218,7 @@ function showResult(a, log, saved, prevBest) {
     : `${MODES[m].icon} ${MODES[m].name}` + (record ? ' · <span class="pill ok">🏅 สถิติใหม่!</span>' : prevBest && m !== 'practice' ? ` · สถิติเดิม ${prevBest}` : '');
   $('#rCorrect').textContent = `ถูก ${a.correct}/${a.total} ข้อ`;
   $('#rPts').textContent = m === 'practice' ? '–' : a.points; $('#rStreak').textContent = a.bestStreak; $('#rTime').textContent = fmtSec(a.durationSec);
-  $('#rSaved').textContent = saved === null ? '📖 โหมดฝึก ไม่บันทึกคะแนน' : saved ? (MODE === 'ms' ? '✅ บันทึกคะแนนลง Excel แล้ว' : '✅ บันทึกคะแนนแล้ว (โหมดทดลอง — เก็บในเครื่องนี้)') : '⚠️ ยังบันทึกไม่สำเร็จ ระบบจะส่งให้อัตโนมัติเมื่อเปิดหน้านี้ครั้งถัดไป';
+  $('#rSaved').textContent = saved === null ? '📖 โหมดฝึก ไม่บันทึกคะแนน' : saved ? '✅ บันทึกคะแนนแล้ว' : '⚠️ ยังบันทึกไม่สำเร็จ ระบบจะส่งให้อัตโนมัติเมื่อเปิดหน้านี้ครั้งถัดไป';
   $('#review').innerHTML = log.length ? log.map((v, i) => `<li><div class="rq">${i + 1}. ${esc(v.question)}</div>
     <div class="${v.isCorrect === 'ถูก' ? 'ok' : 'bad'}">${v.isCorrect === 'ถูก' ? '✔' : '✘'} คำตอบของคุณ: ${esc(v.chosen)}</div>
     ${v.isCorrect === 'ถูก' ? '' : `<div class="ok">✔ คำตอบที่ถูก: ${esc(v.correctAnswer)}</div>`}
@@ -3420,6 +3366,7 @@ async function showAdmin() {
   mount('#tpl-admin');
   $('#adminEmail').textContent = ME.email;
   $('#toQuiz').onclick = () => { location.hash = ''; };
+  $('#lockBtn').onclick = () => lockAdmin('🔒 ล็อกหน้า Admin แล้ว');
   $('#logout2').onclick = logout;
   $('#tabs').onclick = e => { const b = e.target.closest('button'); if (b) switchTab(b.dataset.tab); };
   $('#refresh').onclick = async () => { await adminReload(); toast('อัปเดตข้อมูลล่าสุดแล้ว'); };
@@ -3437,12 +3384,12 @@ async function showAdmin() {
   $('#importFile').onchange = importQuestions;
   $('#exportQ').onclick = exportQuestions;
   $('#settingsForm').onsubmit = saveSettings;
-  $('#resetDemo').onclick = async () => { if (!(await dialog({ text: 'ลบข้อมูลทดลองทั้งหมดในเบราว์เซอร์นี้?', ok: 'ลบ', danger: true }))) return; ['settings', 'questions', 'attempts', 'answers', 'pending'].forEach(LS.del); await adminReload(); toast('รีเซ็ตแล้ว'); };
+  $('#resetDemo').onclick = async () => { if (!(await dialog({ text: 'ลบคะแนน คำถามที่แก้ไข และการตั้งค่าทั้งหมดในเบราว์เซอร์นี้?', ok: 'ลบ', danger: true }))) return; ['settings', 'questions', 'attempts', 'answers', 'pending'].forEach(LS.del); await adminReload(); toast('รีเซ็ตแล้ว'); };
   if (STORE.webUrl) { $('#openExcel').href = STORE.webUrl; $('#openExcel').classList.remove('hidden'); }
-  if (MODE === 'ms') $('#resetDemo').closest('.card').classList.add('hidden');
   await adminReload();
 }
 async function adminReload() {
+  if (!ME?.isAdmin) return lockAdmin();
   try { await reloadData(true); } catch (e) { toast('โหลดข้อมูลไม่สำเร็จ: ' + e.message); }
   bindSettings(); renderAll();
 }
@@ -3522,13 +3469,14 @@ async function clearAll() {
   try { await STORE.clearAll(); toast('ล้างข้อมูลแล้ว'); } catch (err) { toast(err.message); }
   adminReload();
 }
+const safeCell = v => (typeof v === 'string' && /^[=+\-@\t\r]/.test(v)) ? "'" + v : (v ?? '');
 function exportScores(prefix) {
   if (!window.XLSX) return toast('โหลดไลบรารี Excel ไม่สำเร็จ');
   const wb = XLSX.utils.book_new();
-  const add = (name, head, keys, rows, widths) => { const ws = XLSX.utils.aoa_to_sheet([head, ...rows.map(r => keys.map(k => r[k] ?? ''))]); ws['!cols'] = widths.map(w => ({ wch: w })); ws['!autofilter'] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: rows.length, c: head.length - 1 } }) }; XLSX.utils.book_append_sheet(wb, ws, name); };
+  const add = (name, head, keys, rows, widths) => { const ws = XLSX.utils.aoa_to_sheet([head, ...rows.map(r => keys.map(k => safeCell(r[k])))]); ws['!cols'] = widths.map(w => ({ wch: w })); ws['!autofilter'] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: rows.length, c: head.length - 1 } }) }; XLSX.utils.book_append_sheet(wb, ws, name); };
   add('Scores', COLS.Scores.head, COLS.Scores.keys, ATTEMPTS.slice().sort((a, b) => sortKey(a.timestamp) - sortKey(b.timestamp)), [16, 20, 26, 32, 10, 10, 10, 10, 10, 16, 8, 12, 12, 12]);
   add('Answers', COLS.Answers.head, COLS.Answers.keys, ANSWERS, [16, 20, 32, 26, 8, 12, 18, 60, 40, 40, 10, 14, 12]);
-  add('Summary', ['ชื่อ-นามสกุล', 'อีเมล', 'ครั้งที่สอบ (Classic)', 'คะแนนสูงสุด', 'ร้อยละสูงสุด', 'สถานะ', 'สอบล่าสุด', 'เล่นโหมดอื่น (ครั้ง)'], ['name', 'email', 'attempts', 'bestPoints', 'bestPercent', 'status', 'last', 'otherPlays'],
+  add('Summary', ['ชื่อ-นามสกุล', 'รหัสพนักงาน', 'ครั้งที่สอบ (Classic)', 'คะแนนสูงสุด', 'ร้อยละสูงสุด', 'สถานะ', 'สอบล่าสุด', 'เล่นโหมดอื่น (ครั้ง)'], ['name', 'email', 'attempts', 'bestPoints', 'bestPercent', 'status', 'last', 'otherPlays'],
     summaryByPerson().map(p => ({ ...p, status: p.passed ? 'ผ่าน' : 'ยังไม่ผ่าน' })), [26, 32, 18, 12, 12, 12, 20, 18]);
   add('QuestionStats', ['Question ID', 'หมวด', 'คำถาม', 'จำนวนครั้งที่ถูกตอบ', 'ตอบถูก', 'อัตราตอบถูก (%)', 'เวลาเฉลี่ย (วินาที)'], ['questionId', 'category', 'question', 'answered', 'correct', 'rate', 'avgTime'], questionStats(), [12, 18, 70, 18, 10, 16, 16]);
   const d = new Date(); const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -3598,7 +3546,7 @@ function saveQuestion(e) {
 function exportQuestions() {
   if (!window.XLSX) return toast('โหลดไลบรารี Excel ไม่สำเร็จ');
   const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.aoa_to_sheet([COLS.Questions.head, ...QUESTIONS.map(qToRow)]);
+  const ws = XLSX.utils.aoa_to_sheet([COLS.Questions.head, ...QUESTIONS.map(q => qToRow(q).map(safeCell))]);
   ws['!cols'] = [10, 18, 60, 30, 30, 30, 30, 16, 60, 12, 16, 16].map(w => ({ wch: w }));
   XLSX.utils.book_append_sheet(wb, ws, 'Questions');
   XLSX.writeFile(wb, 'quiz-questions.xlsx');
@@ -3641,13 +3589,24 @@ async function saveSettings(e) {
   try { await STORE.saveSettings(s); SETTINGS = s; THEME_PREVIEW = null; bindSettings(); applyTheme(); renderSettings(); toast('บันทึกการตั้งค่าแล้ว'); } catch (err) { toast('บันทึกไม่สำเร็จ: ' + err.message); }
 }
 function renderSystem() {
+  $('#secLock').textContent = `${CONFIG.maxPasswordTries} ครั้ง / ${CONFIG.lockMinutes} นาที`;
+  $('#secIdle').textContent = `${CONFIG.adminIdleMinutes} นาที`;
+  $('#makeHash').onclick = async () => {
+    const a = $('#newPw1').value, b = $('#newPw2').value;
+    if (a.length < 10) return toast('รหัสผ่านต้องมีอย่างน้อย 10 ตัวอักษร');
+    if (a !== b) return toast('รหัสผ่านทั้งสองช่องไม่ตรงกัน');
+    const salt = [...crypto.getRandomValues(new Uint8Array(16))].map(x => x.toString(16).padStart(2, '0')).join(''), it = 210000;
+    const hash = await pbkdf2Hex(a, salt, it);
+    $('#hashOut').value = `adminPassword: { salt: '${salt}', hash: '${hash}', iterations: ${it} },`;
+    $('#hashOut').classList.remove('hidden'); $('#copyHash').classList.remove('hidden');
+    $('#newPw1').value = $('#newPw2').value = '';
+  };
+  $('#copyHash').onclick = () => copyText($('#hashOut').value);
   const rows = [
-    ['โหมด', MODE === 'ms' ? '✅ Microsoft 365 + Excel' : '🧪 โหมดทดลอง'],
+    ['การเข้าสู่ระบบ', 'รหัสพนักงาน 7 หลัก + ชื่อภาษาไทย'],
     ['ผู้ใช้', `${ME.name} (${ME.email})`],
-    ['ไฟล์ Excel', MODE === 'ms' ? `<a href="${esc(STORE.webUrl)}" target="_blank" rel="noopener">${esc(STORE.fileName)}</a>` : 'localStorage ของเบราว์เซอร์นี้'],
-    ['ชีตในไฟล์', 'Scores · Answers · Questions · Settings'],
-    ['Redirect URI', `<code>${esc(location.origin + location.pathname)}</code>`],
-    ['Admin', esc(CONFIG.adminEmails.join(', ') || '-')],
+    ['ที่เก็บข้อมูล', 'เบราว์เซอร์ของเครื่องนี้ (ดาวน์โหลดเป็น Excel ได้ที่แท็บผลคะแนน)'],
+    ['Admin', esc(CONFIG.admins.map(a => `${a.id} ${a.name}`).join(', '))],
   ];
   $('#sysInfo').innerHTML = rows.map(([k, v]) => `<b>${k}</b><span>${v}</span>`).join('');
 }

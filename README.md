@@ -4,5 +4,6 @@
 
 เล่นได้ที่: https://wwsk51.github.io/hr-quiz/
 
+- เข้าสู่ระบบด้วยรหัสพนักงาน 7 หลัก + ชื่อภาษาไทย
+- หน้า Admin เข้าได้เฉพาะผู้ดูแลที่กำหนดใน `CONFIG.admins` และต้องใส่รหัสผ่าน (เก็บเป็น hash PBKDF2-SHA256)
 - หน้าเว็บทั้งหมดอยู่ในไฟล์ `index.html` ไฟล์เดียว
-- ตั้งค่า Microsoft login และไฟล์ Excel บน SharePoint ได้ที่ส่วน `CONFIG` ด้านบนของ `index.html`
