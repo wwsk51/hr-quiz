@@ -333,7 +333,7 @@ const CONFIG = {
   ],
   // รหัสผ่านหน้า Admin — เก็บเป็นค่า hash (PBKDF2-SHA256) ไม่มีรหัสผ่านจริงอยู่ในไฟล์
   // เปลี่ยนรหัสผ่านได้ที่ Admin → แท็บ 🔌 ระบบ → “เปลี่ยนรหัสผ่าน Admin”
-  adminPassword: { salt: '8dc7f6c472b719105543d60beb6af7a5', hash: 'ccfd163f6c4b6f8e05eb86857e84f5f310d32ae2929717aa96e0e19440634cec', iterations: 210000 },
+  adminPassword: { adminPassword: { salt: 'cedaa1bfe6a99102fb2d2c537b7c4a6b', hash: 'b2dc2f9af288108c73c3c5701039b548d294aac46f942f8269c893755f0b04ab', iterations: 210000 }, },
   adminIdleMinutes: 30,      // ล็อกหน้า Admin อัตโนมัติเมื่อไม่ได้ใช้งาน (นาที)
   maxPasswordTries: 5,       // ใส่รหัสผิดเกินจำนวนนี้ จะถูกล็อก
   lockMinutes: 15,           // ระยะเวลาล็อก (นาที)
