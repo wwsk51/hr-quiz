@@ -333,7 +333,7 @@ const CONFIG = {
   ],
   // รหัสผ่านหน้า Admin — เก็บเป็นค่า hash (PBKDF2-SHA256) ไม่มีรหัสผ่านจริงอยู่ในไฟล์
   // เปลี่ยนรหัสผ่านได้ที่ Admin → แท็บ 🔌 ระบบ → “เปลี่ยนรหัสผ่าน Admin”
-  adminPassword: { adminPassword: { salt: 'cedaa1bfe6a99102fb2d2c537b7c4a6b', hash: 'b2dc2f9af288108c73c3c5701039b548d294aac46f942f8269c893755f0b04ab', iterations: 210000 }, },
+  adminPassword: { salt: 'cedaa1bfe6a99102fb2d2c537b7c4a6b', hash: 'b2dc2f9af288108c73c3c5701039b548d294aac46f942f8269c893755f0b04ab', iterations: 210000 },
   adminIdleMinutes: 30,      // ล็อกหน้า Admin อัตโนมัติเมื่อไม่ได้ใช้งาน (นาที)
   maxPasswordTries: 5,       // ใส่รหัสผิดเกินจำนวนนี้ จะถูกล็อก
   lockMinutes: 15,           // ระยะเวลาล็อก (นาที)
@@ -617,7 +617,7 @@ const CONFIG = {
   <section data-pane="system" class="hidden">
     <div class="card"><h3>สถานะการเชื่อมต่อ</h3><div class="kv" id="sysInfo"></div></div>
     <div class="card"><h3>🔑 เปลี่ยนรหัสผ่าน Admin</h3>
-      <p class="small muted" style="margin-bottom:10px">ตั้งรหัสใหม่อย่างน้อย 10 ตัวอักษร ระบบจะสร้างค่า hash ให้นำไปแทนบรรทัด <code>adminPassword</code> ในไฟล์ index.html แล้วอัปโหลดใหม่</p>
+      <p class="small muted" style="margin-bottom:10px">ตั้งรหัสใหม่อย่างน้อย 10 ตัวอักษร ระบบจะสร้างบรรทัดใหม่ให้ — ในไฟล์ index.html ให้<b>ลบบรรทัดเดิมที่ขึ้นต้นด้วย <code>adminPassword:</code> ทั้งบรรทัด</b> แล้ววางบรรทัดใหม่แทน (หรือส่งบรรทัดนี้ให้ผู้ดูแลเว็บอัปโหลดให้)</p>
       <label class="field"><span>รหัสผ่านใหม่</span><input type="password" id="newPw1" autocomplete="new-password"></label>
       <label class="field"><span>ยืนยันรหัสผ่านใหม่</span><input type="password" id="newPw2" autocomplete="new-password"></label>
       <button class="btn btn-primary btn-sm" id="makeHash">สร้างค่า hash</button>
@@ -2852,7 +2852,9 @@ function lockState() { const s = LS.get('pwLock', { fails: 0, until: 0 }); retur
 async function verifyAdminPassword(pw) {
   const st = lockState();
   if (st.until > Date.now()) throw new Error(`ใส่รหัสผ่านผิดหลายครั้ง — ลองใหม่ได้ในอีก ${Math.ceil((st.until - Date.now()) / 60000)} นาที`);
-  const c = CONFIG.adminPassword;
+  let c = CONFIG.adminPassword || {};
+  while (c && c.adminPassword) c = c.adminPassword; // tolerate a line pasted inside the old one
+  if (!/^[0-9a-f]{32}$/.test(c.salt || '') || !/^[0-9a-f]{64}$/.test(c.hash || '') || !(c.iterations > 0)) throw new Error('การตั้งค่ารหัสผ่าน Admin ในไฟล์ index.html ไม่ถูกต้อง — บรรทัด adminPassword ต้องมีรูปแบบเดียวกับที่ระบบสร้างให้ (แทนที่ทั้งบรรทัด)');
   const ok = safeEqual(await pbkdf2Hex(pw, c.salt, c.iterations), c.hash);
   if (ok) { LS.set('pwLock', { fails: 0, until: 0 }); return true; }
   const fails = st.fails + 1;
@@ -3597,7 +3599,7 @@ function renderSystem() {
     if (a !== b) return toast('รหัสผ่านทั้งสองช่องไม่ตรงกัน');
     const salt = [...crypto.getRandomValues(new Uint8Array(16))].map(x => x.toString(16).padStart(2, '0')).join(''), it = 210000;
     const hash = await pbkdf2Hex(a, salt, it);
-    $('#hashOut').value = `adminPassword: { salt: '${salt}', hash: '${hash}', iterations: ${it} },`;
+    $('#hashOut').value = `  adminPassword: { salt: '${salt}', hash: '${hash}', iterations: ${it} },`;
     $('#hashOut').classList.remove('hidden'); $('#copyHash').classList.remove('hidden');
     $('#newPw1').value = $('#newPw2').value = '';
   };
