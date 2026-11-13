@@ -1,0 +1,3658 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#312e81">
+<title>HR Knowledge Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#16193a; --muted:#6b6f8e; --line:#e7e8f3; --bg:#f4f4fb; --card:#fff;
+  --brand:#4338ca; --brand-2:#7c3aed; --accent:#f59e0b; --ok:#16a34a; --ok-bg:#dcfce7;
+  --bad:#dc2626; --bad-bg:#fee2e2; --radius:18px; --shadow:0 10px 30px -12px rgba(30,27,75,.25);
+  font-family:'IBM Plex Sans Thai',system-ui,-apple-system,'Segoe UI',sans-serif; color:var(--ink);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{background:var(--bg);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+a{color:var(--brand)}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.85rem 1.3rem;border-radius:14px;font-weight:600;transition:transform .08s,box-shadow .2s,background .2s;text-decoration:none}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;box-shadow:0 8px 20px -8px rgba(67,56,202,.7)}
+.btn-primary:disabled{opacity:.5;box-shadow:none}
+.btn-ghost{background:#eef0ff;color:var(--brand)}
+.btn-light{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn-danger{background:var(--bad-bg);color:var(--bad)}
+.btn-block{width:100%}
+.btn-lg{padding:1.05rem 1.4rem;font-size:1.08rem}
+.btn-sm{padding:.45rem .8rem;font-size:.85rem;border-radius:10px}
+
+.alert{background:var(--bad-bg);color:var(--bad);padding:.75rem 1rem;border-radius:12px;font-size:.9rem;margin-bottom:1rem}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:.75rem 1.1rem;border-radius:12px;z-index:99;font-size:.92rem;max-width:90vw;box-shadow:var(--shadow)}
+
+/* ---------- login ---------- */
+.login-body{background:radial-gradient(120% 80% at 10% 0%,#6d28d9 0%,#312e81 45%,#0f0d2e 100%);min-height:100vh}
+.login{min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;max-width:460px;margin:0 auto;padding:calc(36px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom))}
+.login-hero{color:#fff;padding:12px 6px 28px}
+.eyebrow{display:inline-block;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;background:rgba(255,255,255,.12);padding:.35rem .7rem;border-radius:99px;margin-bottom:18px}
+.login-hero h1{font-size:2.3rem;line-height:1.15;font-weight:700}
+.login-hero p{opacity:.8;margin-top:10px;font-size:1.02rem}
+.hero-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+.hero-chips span{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:.82rem;padding:.4rem .7rem;border-radius:99px}
+.login-card{background:#fff;border-radius:24px;padding:26px 22px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
+.login-card h2{font-size:1.35rem;margin-bottom:6px}
+.login-card .muted{margin-bottom:20px;font-size:.95rem}
+.ms-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:14px;border:1px solid #8c8c8c;border-radius:6px;background:#fff;color:#5e5e5e;font-family:'Segoe UI',system-ui,sans-serif;font-weight:600;font-size:1rem;text-decoration:none;transition:background .15s}
+.ms-btn:hover{background:#f3f3f3}
+.ms-btn svg{width:21px;height:21px}
+.fineprint{font-size:.78rem;color:var(--muted);margin-top:16px;text-align:center}
+.demo-box{margin-top:18px;border-top:1px dashed var(--line);padding-top:18px}
+.demo-box .tag{display:inline-block;background:#fef3c7;color:#92400e;font-size:.75rem;font-weight:600;padding:.25rem .55rem;border-radius:6px;margin-bottom:10px}
+.field{display:block;margin-bottom:12px}
+.field span{display:block;font-size:.85rem;color:var(--muted);margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:.75rem .85rem;border:1px solid var(--line);border-radius:12px;background:#fff;outline:none;transition:border .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand)}
+
+/* ---------- app shell ---------- */
+.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;background:rgba(244,244,251,.88);backdrop-filter:blur(12px)}
+.topbar .who{display:flex;align-items:center;gap:10px;min-width:0}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;display:grid;place-items:center;font-weight:700;flex:none}
+.who-name{font-weight:600;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-actions{display:flex;gap:6px;flex:none}
+.wrap{max-width:560px;margin:0 auto;padding:6px 16px calc(32px + env(safe-area-inset-bottom))}
+.card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:0 1px 0 var(--line),0 6px 18px -12px rgba(30,27,75,.2);margin-bottom:14px}
+.card h3{font-size:1rem;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+
+/* home */
+.hero-card{background:linear-gradient(140deg,#4338ca,#7c3aed 60%,#a855f7);color:#fff;border-radius:24px;padding:22px;position:relative;overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow)}
+.hero-card::after{content:"";position:absolute;right:-40px;top:-40px;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.1)}
+.hero-card h1{font-size:1.5rem;line-height:1.25;position:relative}
+.hero-card p{opacity:.85;margin:6px 0 18px;position:relative;font-size:.95rem}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;position:relative}
+.rules div{background:rgba(255,255,255,.14);border-radius:14px;padding:10px 8px;text-align:center}
+.rules b{display:block;font-size:1.3rem}
+.rules small{opacity:.85;font-size:.75rem}
+.hero-card .btn{background:#fff;color:var(--brand);box-shadow:none;position:relative}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--bg);border-radius:14px;padding:12px 8px;text-align:center}
+.stat b{display:block;font-size:1.25rem}
+.stat small{color:var(--muted);font-size:.75rem}
+.lb{list-style:none}
+.lb li{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line)}
+.lb li:last-child{border-bottom:0}
+.lb .rk{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;font-size:.85rem;background:var(--bg);flex:none}
+.lb li:nth-child(1) .rk{background:#fde68a}.lb li:nth-child(2) .rk{background:#e5e7eb}.lb li:nth-child(3) .rk{background:#fed7aa}
+.lb .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb .pt{font-weight:700;color:var(--brand)}
+.lb li.me{background:#eef0ff;border-radius:10px}
+.hist{list-style:none;font-size:.9rem}
+.hist li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)}
+.hist li:last-child{border:0}
+.pill{display:inline-block;font-size:.75rem;font-weight:600;padding:.2rem .55rem;border-radius:99px}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.mid{background:#eef0ff;color:var(--brand)}
+
+/* play */
+.play-head{display:flex;align-items:center;gap:14px;margin:4px 0 14px}
+.timer{position:relative;width:62px;height:62px;flex:none}
+.timer svg{transform:rotate(-90deg)}
+.timer .track{stroke:#e4e4f3}
+.timer .bar{stroke:var(--brand);transition:stroke .3s}
+.timer.warn .bar{stroke:var(--bad)}
+.timer .num{position:absolute;inset:0;display:grid;place-items:center;font-weight:700;font-size:1.25rem}
+.timer.warn .num{color:var(--bad);animation:pulse .6s infinite alternate}
+@keyframes pulse{to{transform:scale(1.12)}}
+.progress-wrap{flex:1}
+.progress-meta{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);margin-bottom:6px}
+.progress{height:10px;background:#e4e4f3;border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-2));border-radius:99px;transition:width .4s}
+.scorebar{display:flex;gap:8px;margin-bottom:12px}
+.scorebar span{background:#fff;border:1px solid var(--line);border-radius:99px;padding:.35rem .8rem;font-size:.88rem;font-weight:600}
+.scorebar .streak{color:#c2410c}
+.qcard{background:#fff;border-radius:22px;padding:20px 18px;box-shadow:var(--shadow);margin-bottom:14px;animation:rise .35s ease}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}}
+.qcat{font-size:.78rem;color:var(--brand);font-weight:600;letter-spacing:.02em}
+.qtext{font-size:1.18rem;line-height:1.5;font-weight:600;margin-top:6px}
+.choices{display:grid;gap:10px}
+.choice{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:16px;padding:14px;min-height:60px;font-size:1rem;line-height:1.4;transition:border .15s,background .15s,transform .08s}
+.choice:active{transform:scale(.98)}
+.choice .L{flex:none;width:32px;height:32px;border-radius:10px;background:var(--bg);display:grid;place-items:center;font-weight:700;color:var(--brand)}
+.choice.picked{border-color:var(--brand);background:#eef0ff}
+.choice.correct{border-color:var(--ok);background:var(--ok-bg)}.choice.correct .L{background:var(--ok);color:#fff}
+.choice.wrong{border-color:var(--bad);background:var(--bad-bg)}.choice.wrong .L{background:var(--bad);color:#fff}
+.choice:disabled{cursor:default}
+.choices.locked .choice:not(.correct):not(.wrong){opacity:.55}
+.feedback{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-radius:24px 24px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -20px 40px -20px rgba(0,0,0,.35);animation:up .3s ease}
+@keyframes up{from{transform:translateY(100%)}}
+.feedback .inner{max-width:560px;margin:0 auto}
+.fb-title{display:flex;align-items:center;justify-content:space-between;font-size:1.2rem;font-weight:700;margin-bottom:6px}
+.feedback.ok .fb-title{color:var(--ok)}.feedback.bad .fb-title{color:var(--bad)}
+.fb-gain{font-size:1rem;background:var(--ok-bg);color:var(--ok);padding:.2rem .6rem;border-radius:99px}
+.feedback.bad .fb-gain{background:var(--bad-bg);color:var(--bad)}
+.fb-exp{font-size:.93rem;color:#3f4366;line-height:1.55;margin-bottom:14px;max-height:30vh;overflow:auto}
+.float-pts{position:fixed;left:50%;top:40%;transform:translateX(-50%);font-size:2.4rem;font-weight:800;color:var(--ok);pointer-events:none;z-index:30;animation:floatUp 1s ease forwards}
+@keyframes floatUp{to{opacity:0;transform:translate(-50%,-80px)}}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* result */
+.result-hero{text-align:center;padding:26px 18px}
+.result-hero .emoji{font-size:3rem}
+.result-hero h2{font-size:1.5rem;margin:6px 0 4px}
+.ring{width:150px;height:150px;margin:16px auto;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .num{position:absolute;inset:0;display:grid;place-items:center;font-size:2rem;font-weight:800}
+.ring .num small{display:block;font-size:.8rem;color:var(--muted);font-weight:500}
+.review{list-style:none;counter-reset:r}
+.review li{padding:12px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.review li:last-child{border:0}
+.review .rq{font-weight:600;margin-bottom:4px}
+.review .ra{color:var(--muted)}
+.review .ok{color:var(--ok)}.review .bad{color:var(--bad)}
+.actions{display:grid;gap:10px}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+
+/* ---------- admin ---------- */
+.admin-body .wrap{max-width:1100px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none;position:sticky;top:56px;z-index:9;background:var(--bg)}
+.tabs button{flex:none;padding:.6rem 1rem;border-radius:12px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--line)}
+.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:760px){.kpis{grid-template-columns:repeat(4,1fr)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid2>.card{margin:0}}
+.kpi{background:#fff;border-radius:16px;padding:16px;border:1px solid var(--line)}
+.kpi small{color:var(--muted);font-size:.8rem}
+.kpi b{display:block;font-size:1.7rem;margin-top:2px}
+.bars{display:flex;align-items:flex-end;gap:10px;height:150px;padding-top:10px}
+.bars .b{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.bars .b i{display:block;width:100%;background:linear-gradient(180deg,var(--brand-2),var(--brand));border-radius:8px 8px 3px 3px;min-height:3px;transition:height .5s}
+.bars .b small{font-size:.72rem;color:var(--muted)}
+.bars .b span{font-size:.8rem;font-weight:600}
+.qstat{padding:10px 0;border-bottom:1px solid var(--line)}
+.qstat:last-child{border:0}
+.qstat .t{font-size:.88rem;margin-bottom:6px}
+.meter{height:8px;background:#eceef8;border-radius:99px;overflow:hidden}
+.meter i{display:block;height:100%;border-radius:99px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar input{flex:1;min-width:180px;padding:.65rem .85rem;border:1px solid var(--line);border-radius:12px;background:#fff}
+.table-wrap{overflow-x:auto;background:#fff;border-radius:16px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:.88rem;white-space:nowrap}
+th,td{padding:.7rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+th{background:#fafaff;font-weight:600;color:var(--muted);font-size:.8rem;position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px}
+.qitem .body{flex:1;min-width:0}
+.qitem .t{font-weight:600;line-height:1.45}
+.qitem .meta{font-size:.8rem;color:var(--muted);margin-top:6px;display:flex;gap:8px;flex-wrap:wrap}
+.qitem .ops{display:flex;gap:6px;flex:none}
+.qitem.off{opacity:.55}
+.modal{position:fixed;inset:0;background:rgba(15,13,46,.55);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:640px){.modal{align-items:center}}
+.modal .sheet{background:#fff;width:100%;max-width:620px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom))}
+@media(min-width:640px){.modal .sheet{border-radius:22px}}
+.modal h3{margin-bottom:14px}
+.choice-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.choice-row input[type=text]{flex:1;padding:.65rem .8rem;border:1px solid var(--line);border-radius:10px}
+.choice-row label{display:flex;align-items:center;gap:4px;font-size:.8rem;color:var(--muted);flex:none}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.switch:last-child{border:0}
+.switch input[type=checkbox]{width:46px;height:26px;appearance:none;background:#d6d8e8;border-radius:99px;position:relative;cursor:pointer;transition:background .2s;flex:none}
+.switch input[type=checkbox]::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch input[type=checkbox]:checked{background:var(--brand)}
+.switch input[type=checkbox]:checked::after{left:23px}
+.switch input[type=number]{width:90px;padding:.5rem .6rem;border:1px solid var(--line);border-radius:10px;text-align:right}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:.92rem}
+
+.loading{min-height:100vh;display:grid;place-items:center;color:var(--muted)}
+.spinner{width:38px;height:38px;border:4px solid #e4e4f3;border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dialog-back{position:fixed;inset:0;background:rgba(15,13,46,.55);z-index:60;display:grid;place-items:center;padding:20px}
+.dialog{background:#fff;border-radius:20px;padding:20px;max-width:380px;width:100%}
+.dialog p{margin:6px 0 16px;line-height:1.5}
+.dialog .row{display:flex;gap:8px;justify-content:flex-end}
+.dialog input{width:100%;padding:.7rem .8rem;border:1px solid var(--line);border-radius:10px;margin-bottom:14px}
+.kv{display:grid;grid-template-columns:140px 1fr;gap:8px 12px;font-size:.9rem}
+.kv b{color:var(--muted);font-weight:500}
+.kv span{word-break:break-all}
+code{background:#eef0ff;padding:.1rem .35rem;border-radius:6px;font-size:.85em}
+/* ---- modes ---- */
+.hero-stats{position:relative;margin-top:4px}
+.hero-stats .stat{background:rgba(255,255,255,.14)}
+.hero-stats .stat small{color:rgba(255,255,255,.85)}
+.sec-title{font-size:1rem;margin:4px 2px 10px}
+.mode-grid{display:grid;gap:10px;margin-bottom:12px}
+.mode-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:18px;padding:14px;transition:transform .08s,border .15s,box-shadow .15s;position:relative;overflow:hidden}
+.mode-card:active{transform:scale(.98)}
+.mode-card:hover{border-color:#c7c9f5;box-shadow:0 8px 20px -14px rgba(67,56,202,.6)}
+.mode-card:disabled{opacity:.5;cursor:not-allowed}
+.mode-card .mi{flex:none;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-size:1.6rem}
+.m-classic .mi{background:#eef0ff}.m-attack .mi{background:#fef3c7}.m-survival .mi{background:#fee2e2}.m-practice .mi{background:#dcfce7}
+.mode-card .mt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.mode-card .mt b{font-size:1.05rem}
+.mode-card .mt small{color:var(--muted);font-size:.82rem;line-height:1.4}
+.mode-card .mb{flex:none;font-size:.72rem;font-weight:600;background:var(--bg);color:var(--muted);padding:.3rem .55rem;border-radius:99px;align-self:flex-start}
+.m-classic .mb{background:#eef0ff;color:var(--brand)}
+.cat-select{margin-top:6px;padding:.4rem .5rem;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:.82rem;max-width:100%}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.seg button,.seg label{padding:.4rem .75rem;border-radius:99px;background:var(--bg);font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:6px}
+.seg button.on{background:var(--ink);color:#fff}
+/* ---- play extras ---- */
+.scorebar{align-items:center;flex-wrap:wrap}
+.mode-chip{background:var(--ink)!important;color:#fff;border-color:var(--ink)!important}
+.lives{letter-spacing:2px;background:#fff1f2!important;border-color:#fecdd3!important}
+.scorebar span{padding:.3rem .65rem!important;font-size:.84rem!important}
+.quit{flex:none;width:34px;height:34px;border-radius:50%;background:#fff;border:1px solid var(--line);color:var(--muted);font-weight:700}
+.timer.practice .bar{stroke:var(--ok)}
+.qtype{display:inline-block;font-size:.72rem;font-weight:700;padding:.15rem .5rem;border-radius:99px;margin-right:8px;background:#eef0ff;color:var(--brand)}
+.qtype.t-tf{background:#fef3c7;color:#92400e}.qtype.t-num{background:#dcfce7;color:#166534}
+.tf-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tf-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:130px;border-radius:22px;font-size:1.2rem;font-weight:700;border:3px solid transparent;transition:transform .08s,opacity .2s}
+.tf-btn span{font-size:2.4rem;line-height:1}
+.tf-btn:active{transform:scale(.96)}
+.tf-yes{background:#dcfce7;color:#15803d}.tf-no{background:#fee2e2;color:#b91c1c}
+.tf-btn.correct{border-color:var(--ok);box-shadow:0 0 0 4px rgba(22,163,74,.18)}
+.tf-btn.wrong{border-color:var(--bad);box-shadow:0 0 0 4px rgba(220,38,38,.18)}
+.tf-grid.locked .tf-btn:not(.correct):not(.wrong){opacity:.4}
+.numpad{background:#fff;border-radius:22px;padding:14px;box-shadow:0 1px 0 var(--line)}
+.num-display{display:flex;align-items:baseline;justify-content:center;gap:8px;padding:14px;border:2px solid var(--line);border-radius:16px;margin-bottom:12px;transition:border .2s,background .2s}
+.num-display span{font-size:2.6rem;font-weight:800;min-width:1ch;text-align:center}
+.num-display span.ph{color:#c7c9de}
+.num-display small{color:var(--muted);font-size:1rem}
+.num-display.ok{border-color:var(--ok);background:var(--ok-bg)}.num-display.bad{border-color:var(--bad);background:var(--bad-bg)}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.keys button{height:56px;border-radius:14px;background:var(--bg);font-size:1.35rem;font-weight:700;transition:transform .06s,background .1s}
+.keys button:active{transform:scale(.94);background:#e4e6f5}
+.keys .k-ok{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff}
+.keys .k-del{color:var(--muted)}
+.keys button:disabled{opacity:.45}
+.num-correct{margin-top:10px;text-align:center;color:var(--ok);font-weight:700}
+.flash{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);z-index:35;font-size:3.4rem;font-weight:800;width:130px;height:130px;border-radius:50%;display:grid;place-items:center;color:#fff;animation:pop .45s ease;pointer-events:none}
+.flash.ok{background:rgba(22,163,74,.92)}.flash.bad{background:rgba(220,38,38,.92)}
+@keyframes pop{from{transform:translate(-50%,-50%) scale(.4);opacity:0}}
+.hero-card{background:var(--hero,linear-gradient(140deg,#4338ca,#7c3aed 60%,#a855f7))!important}
+.login-body{background:var(--login-bg,radial-gradient(120% 80% at 10% 0%,#6d28d9 0%,#312e81 45%,#0f0d2e 100%))!important}
+.topbar{background:color-mix(in srgb,var(--bg) 88%,transparent)!important}
+.tabs{background:var(--bg)!important}
+.hero-card .btn{color:var(--brand)!important}
+.eyebrow{margin-right:8px}
+.theme-icon{font-size:1.6rem;vertical-align:middle}
+.hero-card .theme-icon{position:absolute;right:16px;top:12px;font-size:2.6rem;z-index:1;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25));animation:bob 3s ease-in-out infinite}
+.login-hero .theme-icon{display:inline-block;font-size:2rem;animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px) rotate(-6deg)}}
+.theme-greet{position:relative;display:inline-block;font-size:.82rem;font-weight:600;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);color:#fff;padding:.3rem .7rem;border-radius:99px;margin-bottom:12px;max-width:calc(100% - 56px)}
+.login-hero .theme-greet{display:block;width:max-content;max-width:100%;margin:14px 0 0}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:3;overflow:hidden}
+body.playing #fx{display:none}
+.fx{position:absolute;top:0;will-change:transform;animation-timing-function:linear;animation-iteration-count:infinite;user-select:none}
+.fx-fall{animation-name:fxFall}.fx-rise{animation-name:fxRise}.fx-drift{animation-name:fxDrift}
+@keyframes fxFall{from{transform:translate(0,-8vh) rotate(0)}50%{transform:translate(24px,50vh) rotate(180deg)}to{transform:translate(-12px,108vh) rotate(360deg)}}
+@keyframes fxRise{from{transform:translate(0,108vh) scale(.8)}50%{transform:translate(-18px,50vh) scale(1)}to{transform:translate(12px,-10vh) scale(.9)}}
+@keyframes fxDrift{from{transform:translate(-10vw,20vh) rotate(-10deg)}25%{transform:translate(20vw,5vh) rotate(8deg)}50%{transform:translate(45vw,35vh) rotate(-6deg)}75%{transform:translate(70vw,10vh) rotate(10deg)}to{transform:translate(110vw,25vh) rotate(-8deg)}}
+@media (prefers-reduced-motion: reduce){#fx{display:none}.theme-icon{animation:none!important}}
+.month-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media(min-width:640px){.month-grid{grid-template-columns:repeat(3,1fr)}}
+.month{display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:12px;padding:6px 8px}
+.month span{width:40px;font-size:.82rem;font-weight:600;flex:none}
+.month select{flex:1;min-width:0;padding:.35rem;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:.8rem}
+.qr-preview{background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px;max-width:320px;margin:0 auto 6px}
+.qr-preview canvas{width:100%;height:auto;display:block}
+.poster-preview{display:block;width:100%;max-width:340px;margin:0 auto;border-radius:10px;border:1px solid var(--line);box-shadow:0 10px 30px -18px rgba(30,27,75,.5);aspect-ratio:1240/1754;background:#f1f2f8}
+.share-card{display:flex;gap:16px;align-items:center}
+.share-card canvas{width:110px;height:110px;flex:none;border-radius:12px;border:1px solid var(--line)}
+#printArea{display:none}
+@media print{@page{size:A4;margin:0}body>*:not(#printArea){display:none!important}#printArea{display:block!important}#printArea img{width:100%;height:auto;display:block}}
+.set-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.set-box{background:var(--bg);border-radius:14px;padding:12px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.set-box .big{font-size:1.6rem;font-weight:800;color:var(--brand)}
+.set-box small{color:var(--muted);font-size:.75rem}
+.set-pill{background:var(--ink);color:#fff}
+.qcard.ok{box-shadow:0 0 0 3px var(--ok)}.qcard.bad{box-shadow:0 0 0 3px var(--bad)}
+</style>
+</head>
+<body>
+
+<!-- =====================================================================
+  ⚙️  CONFIG — แก้ค่า 4 ช่องนี้ก่อนใช้งานจริง (ถ้าเว้นว่าง จะเป็นโหมดทดลอง)
+====================================================================== -->
+<script>
+const CONFIG = {
+  // Application (client) ID จาก Azure Portal > Entra ID > App registrations (ประเภท Single-page application)
+  clientId: '',
+  // Directory (tenant) ID ขององค์กร
+  tenantId: '',
+  // ลิงก์แชร์ไฟล์ Excel บน SharePoint / OneDrive (ไฟล์เปล่าก็ได้ ระบบจะสร้างชีตให้เอง)
+  excelShareUrl: '',
+  // อีเมลผู้ดูแลระบบ (เข้าหน้า Admin ได้)
+  adminEmails: ['hr.admin@yourcompany.com'],
+  // (ไม่บังคับ) จำกัดโดเมนอีเมลที่เล่นได้ เช่น ['yourcompany.com']
+  allowedDomains: [],
+};
+</script>
+
+<div id="fx" aria-hidden="true"></div>
+<div id="app"><div class="loading"><div><div class="spinner"></div>กำลังโหลด…</div></div></div>
+
+<!-- ============================ 1. LOGIN ============================ -->
+<template id="tpl-login">
+<div class="login-body">
+<main class="login">
+  <section class="login-hero">
+    <span class="eyebrow">HR Knowledge Sharing</span><span class="theme-icon" data-theme-icon></span>
+    <div class="theme-greet" data-theme-greet></div>
+    <h1 data-bind="title"></h1>
+    <p data-bind="subtitle"></p>
+    <div class="hero-chips" id="chips"></div>
+  </section>
+  <section class="login-card">
+    <h2>ยินดีต้อนรับ 👋</h2>
+    <p class="muted">เข้าสู่ระบบด้วยบัญชี Microsoft ขององค์กรเพื่อเริ่มเล่น</p>
+    <div id="loginErr" class="alert hidden"></div>
+    <button id="msBtn" class="ms-btn" type="button">
+      <svg viewBox="0 0 21 21" aria-hidden="true"><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg>
+      <span>Sign in with Microsoft</span>
+    </button>
+    <form id="demoForm" class="demo-box hidden">
+      <span class="tag">โหมดทดลอง — ยังไม่ได้ตั้งค่า Microsoft (ข้อมูลเก็บในเครื่องนี้เท่านั้น)</span>
+      <label class="field"><span>ชื่อ-นามสกุล</span><input name="name" required autocomplete="name"></label>
+      <label class="field"><span>อีเมล</span><input name="email" type="email" required autocomplete="email"></label>
+      <button class="btn btn-primary btn-block" type="submit">เข้าสู่ระบบ (ทดลอง)</button>
+    </form>
+    <p class="fineprint">ระบบจะบันทึกชื่อ อีเมล และผลคะแนนของคุณลงไฟล์ Excel ของฝ่าย HR</p>
+  </section>
+</main>
+</div>
+</template>
+
+<!-- ============================ 2. QUIZ ============================ -->
+<template id="tpl-quiz">
+<header class="topbar">
+  <div class="who"><div class="avatar" id="avatar"></div><div class="who-name" id="userName"></div></div>
+  <div class="top-actions">
+    <button id="toAdmin" class="btn btn-ghost btn-sm hidden">⚙️ Admin</button>
+    <button id="logout" class="btn btn-light btn-sm">ออกจากระบบ</button>
+  </div>
+</header>
+<main class="wrap">
+  <section id="home">
+    <div class="hero-card">
+      <span class="theme-icon" data-theme-icon></span>
+      <div class="theme-greet" data-theme-greet></div>
+      <h1 data-bind="title"></h1>
+      <p data-bind="subtitle"></p>
+      <div class="stats3 hero-stats">
+        <div class="stat"><b id="sBest">0</b><small>คะแนนสูงสุด</small></div>
+        <div class="stat"><b id="sRank">–</b><small>อันดับ</small></div>
+        <div class="stat"><b id="sLeft">–</b><small>สิทธิ์ Classic</small></div>
+      </div>
+    </div>
+    <h3 class="sec-title">เลือกโหมดเกม</h3>
+    <div class="mode-grid" id="modes"></div>
+    <p id="startNote" class="small muted" style="margin:-4px 2px 14px"></p>
+
+    <div class="card" id="lbCard">
+      <h3>🏆 Leaderboard</h3>
+      <div class="seg" id="lbTabs"></div>
+      <ol class="lb" id="lb"></ol>
+    </div>
+    <div class="card">
+      <h3>วิธีเก็บคะแนน</h3>
+      <ul class="hist">
+        <li><span>✅ ตอบถูก</span><b>+100</b></li>
+        <li><span>⚡ ตอบเร็ว (Classic / Survival)</span><b>สูงสุด +50</b></li>
+        <li><span>🔥 ตอบถูกติดกัน 3 ข้อขึ้นไป</span><b>+25 / ข้อ</b></li>
+        <li><span>⚡ Time Attack: Combo 3+ ข้อ</span><b>+50 / ข้อ</b></li>
+      </ul>
+    </div>
+    <div class="card" id="histCard"><h3>ประวัติการเล่น</h3><ul class="hist" id="hist"></ul></div>
+    <div class="card share-card hidden" id="shareCard">
+      <canvas id="shareQR" width="240" height="240"></canvas>
+      <div><h3 style="margin-bottom:4px">📱 ชวนเพื่อนมาเล่น</h3><p class="small muted">ให้เพื่อนสแกน QR นี้ หรือส่งลิงก์</p><button class="btn btn-ghost btn-sm" id="shareCopy" style="margin-top:8px">🔗 คัดลอกลิงก์</button></div>
+    </div>
+  </section>
+
+  <section id="play" class="hidden">
+    <div class="play-head">
+      <div class="timer" id="timer">
+        <svg width="62" height="62" viewBox="0 0 62 62"><circle class="track" cx="31" cy="31" r="27" fill="none" stroke-width="6"/><circle class="bar" id="timerBar" cx="31" cy="31" r="27" fill="none" stroke-width="6" stroke-linecap="round"/></svg>
+        <div class="num" id="timerNum"></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-meta"><span id="qIndex"></span><span id="qPct"></span></div>
+        <div class="progress"><i id="progBar" style="width:0"></i></div>
+      </div>
+      <button class="quit" id="quitBtn" title="ออกจากเกม">✕</button>
+    </div>
+    <div class="scorebar">
+      <span class="mode-chip" id="modeChip"></span>
+      <span>⭐ <b id="pts">0</b></span><span class="streak" id="streak">🔥 0</span>
+      <span class="lives hidden" id="lives"></span>
+    </div>
+    <div class="qcard" id="qcard"><div class="qcat"><span id="qType" class="qtype"></span><span id="qCat"></span></div><div class="qtext" id="qText"></div></div>
+    <div id="answerArea"></div>
+    <div style="height:240px"></div>
+  </section>
+
+  <section id="result" class="hidden">
+    <div class="card result-hero">
+      <div class="emoji" id="rEmoji"></div>
+      <h2 id="rTitle"></h2>
+      <p class="muted" id="rSub"></p>
+      <div class="ring">
+        <svg width="150" height="150" viewBox="0 0 150 150"><circle cx="75" cy="75" r="64" fill="none" stroke="#e4e4f3" stroke-width="12"/><circle id="rRing" cx="75" cy="75" r="64" fill="none" stroke="url(#g)" stroke-width="12" stroke-linecap="round"/><defs><linearGradient id="g"><stop offset="0" style="stop-color:var(--brand)"/><stop offset="1" style="stop-color:var(--brand-2)"/></linearGradient></defs></svg>
+        <div class="num"><div><span id="rPct">0</span>%<small id="rCorrect"></small></div></div>
+      </div>
+      <div class="stats3">
+        <div class="stat"><b id="rPts">0</b><small>คะแนน</small></div>
+        <div class="stat"><b id="rStreak">0</b><small>Streak สูงสุด</small></div>
+        <div class="stat"><b id="rTime">0</b><small>เวลา</small></div>
+      </div>
+      <p class="small muted" id="rSaved" style="margin-top:12px"></p>
+    </div>
+    <div class="actions" style="margin-bottom:14px">
+      <button class="btn btn-primary btn-lg" id="againBtn">เล่นอีกครั้ง</button>
+      <button class="btn btn-light" id="homeBtn">กลับหน้าหลัก / เปลี่ยนโหมด</button>
+    </div>
+    <div class="card"><h3>เฉลยและทบทวน</h3><ol class="review" id="review"></ol></div>
+  </section>
+</main>
+<div class="feedback hidden" id="feedback">
+  <div class="inner">
+    <div class="fb-title"><span id="fbTitle"></span><span class="fb-gain" id="fbGain"></span></div>
+    <div class="fb-exp" id="fbExp"></div>
+    <button class="btn btn-primary btn-lg btn-block" id="nextBtn"></button>
+  </div>
+</div>
+<div class="flash hidden" id="flash"></div>
+</template>
+
+<!-- ============================ 3. ADMIN ============================ -->
+<template id="tpl-admin">
+<div class="admin-body">
+<header class="topbar">
+  <div class="who"><div class="avatar">⚙️</div><div><div class="who-name">Admin Control Center</div><div class="small muted" id="adminEmail"></div></div></div>
+  <div class="top-actions">
+    <button class="btn btn-ghost btn-sm" id="toQuiz">🎮 หน้าเกม</button>
+    <button class="btn btn-light btn-sm" id="logout2">ออก</button>
+  </div>
+</header>
+<main class="wrap">
+  <nav class="tabs" id="tabs">
+    <button data-tab="dash" class="on">📊 ภาพรวม</button>
+    <button data-tab="results">📋 ผลคะแนน</button>
+    <button data-tab="questions">❓ คลังคำถาม</button>
+    <button data-tab="settings">🛠️ ตั้งค่าเกม</button>
+    <button data-tab="qr">📱 QR Code</button>
+    <button data-tab="system">🔌 ระบบ</button>
+  </nav>
+
+  <section data-pane="dash">
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div><span class="status-dot" id="openDot"></span><b id="openText"></b><div class="small muted" id="openSub"></div></div>
+      <div style="display:flex;gap:6px"><button class="btn btn-light btn-sm" id="refresh">🔄 รีเฟรช</button><button class="btn btn-sm" id="toggleOpen"></button></div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><small>ผู้เล่น (คน)</small><b id="kPlayers">0</b></div>
+      <div class="kpi"><small>จำนวนครั้งที่เล่น</small><b id="kAttempts">0</b></div>
+      <div class="kpi"><small>คะแนนเฉลี่ย</small><b id="kAvg">0%</b></div>
+      <div class="kpi"><small>ผ่านเกณฑ์ (คน)</small><b id="kPass">0</b></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3>การกระจายคะแนน (%)</h3><div class="bars" id="dist"></div></div>
+      <div class="card"><h3>🏆 Top 10</h3><ol class="lb" id="adminLb"></ol></div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3>เปรียบเทียบชุดข้อสอบ (Classic)</h3><div id="setStats"></div></div>
+    <div class="card"><h3>คำถามที่ตอบผิดบ่อย (เรียงจากยากสุด)</h3><div id="qstats"></div></div>
+  </section>
+
+  <section data-pane="results" class="hidden">
+    <div class="toolbar">
+      <input id="search" placeholder="🔍 ค้นหาชื่อ / อีเมล">
+      <select id="filterMode" class="btn btn-light btn-sm"><option value="">ทุกโหมด</option><option value="classic">🎯 Classic</option><option value="attack">⚡ Time Attack</option><option value="survival">❤️ Survival</option></select>
+      <select id="filterResult" class="btn btn-light btn-sm"><option value="">ผลทั้งหมด</option><option>ผ่าน</option><option>ไม่ผ่าน</option></select>
+      <button class="btn btn-primary btn-sm" id="exportXlsx">⬇️ ดาวน์โหลด Excel</button>
+      <a class="btn btn-light btn-sm hidden" id="openExcel" target="_blank" rel="noopener">📗 เปิดไฟล์ Excel ต้นฉบับ</a>
+      <button class="btn btn-danger btn-sm" id="clearAll">ล้างผลทั้งหมด</button>
+    </div>
+    <p class="small muted" style="margin-bottom:10px">ไฟล์ที่ดาวน์โหลดมี 4 ชีต: Scores · Answers (รายข้อ) · Summary (รายคน) · QuestionStats — ลบรายการเพื่อคืนสิทธิ์เล่นให้พนักงานได้</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>วันที่-เวลา</th><th>โหมด</th><th>ชุด</th><th>ชื่อ</th><th>อีเมล</th><th class="num">คะแนน</th><th class="num">ถูก</th><th class="num">%</th><th>ผล</th><th class="num">เวลา</th><th class="num">ครั้งที่</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section data-pane="questions" class="hidden">
+    <div class="toolbar">
+      <input id="qsearch" placeholder="🔍 ค้นหาคำถาม">
+      <select id="qsetFilter" class="btn btn-light btn-sm"><option value="">ทุกชุด</option><option value="A">ชุด A</option><option value="B">ชุด B</option><option value="C">ชุด C</option><option value="-">ไม่อยู่ในชุด</option></select>
+      <button class="btn btn-primary btn-sm" id="addQ">＋ เพิ่มคำถาม</button>
+      <label class="btn btn-light btn-sm">⬆️ นำเข้า Excel<input type="file" id="importFile" accept=".xlsx,.xls" hidden></label>
+      <button class="btn btn-light btn-sm" id="exportQ">⬇️ ส่งออก / Template</button>
+    </div>
+    <p class="small muted" style="margin-bottom:4px" id="qCount"></p>
+    <p class="small muted" style="margin-bottom:10px">ไฟล์ Excel คอลัมน์ “ประเภท”: <code>mc</code> เลือกตอบ (A–D) · <code>tf</code> ถูก/ผิด (คำตอบ A=ถูก, B=ผิด) · <code>num</code> ตัวเลข (ตัวเลือก A = คำตอบ, B = หน่วย, คำตอบ = A) · คอลัมน์ “ชุดข้อสอบ”: A / B / C หรือเว้นว่าง</p>
+    <div id="qlist"></div>
+  </section>
+
+  <section data-pane="settings" class="hidden">
+    <form id="settingsForm">
+      <div class="card">
+        <h3>🎨 ธีมตามเทศกาล</h3>
+        <label class="field"><span>ธีมที่ใช้</span><select name="theme" id="themeSel"></select></label>
+        <div class="switch"><span>เอฟเฟกต์ตกแต่ง (หิมะ ค้างคาว หัวใจ ฯลฯ) <small class="muted">— ซ่อนอัตโนมัติขณะตอบคำถาม</small></span><input type="checkbox" name="themeEffects"></div>
+        <p class="small muted" style="margin:12px 0 8px">ธีมประจำเดือน (ใช้เมื่อเลือก “อัตโนมัติตามเดือน”)</p>
+        <div class="month-grid" id="monthGrid"></div>
+        <p class="small muted" style="margin-top:10px">💡 เลือกธีมจากรายการด้านบนเพื่อพรีวิวได้ทันที — กด “บันทึกการตั้งค่า” เพื่อใช้กับทุกคน</p>
+      </div>
+      <div class="card">
+        <h3>ข้อมูลเกม</h3>
+        <label class="field"><span>ชื่อเกม</span><input name="title"></label>
+        <label class="field"><span>คำอธิบาย</span><input name="subtitle"></label>
+      </div>
+      <div class="card">
+        <h3>กติกา</h3>
+        <div class="switch"><span>เปิดให้เล่น</span><input type="checkbox" name="isOpen"></div>
+        <div class="switch"><span>🎲 สุ่มชุดข้อสอบ A/B/C ให้ผู้เล่น <small class="muted">(เล่นครบทั้งชุด)</small></span><input type="checkbox" name="useSets"></div>
+        <div class="switch"><span>จำนวนข้อต่อรอบ <small class="muted">(ใช้เมื่อปิดการสุ่มชุด)</small></span><input type="number" name="questionsPerQuiz" min="1"></div>
+        <div class="switch"><span>เวลาต่อข้อ (วินาที)</span><input type="number" name="timePerQuestion" min="5"></div>
+        <div class="switch"><span>เกณฑ์ผ่าน (%)</span><input type="number" name="passPercent" min="0" max="100"></div>
+        <div class="switch"><span>จำนวนสิทธิ์ต่อคน <small class="muted">(0 = ไม่จำกัด)</small></span><input type="number" name="maxAttempts" min="0"></div>
+        <div class="switch"><span>สุ่มลำดับคำถาม</span><input type="checkbox" name="shuffleQuestions"></div>
+        <div class="switch"><span>สุ่มลำดับตัวเลือก</span><input type="checkbox" name="shuffleChoices"></div>
+        <div class="switch"><span>แสดง Leaderboard ให้ผู้เล่น</span><input type="checkbox" name="showLeaderboard"></div>
+        <div class="switch"><span>แสดงคำอธิบายเฉลย</span><input type="checkbox" name="showExplanation"></div>
+      </div>
+      <div class="card">
+        <h3>โหมดเกม</h3>
+        <div class="switch"><span>🎯 Classic <small class="muted">(เปิดเสมอ · ใช้วัดผลผ่าน/ไม่ผ่าน)</small></span><span class="pill ok">เปิด</span></div>
+        <div class="switch"><span>⚡ เปิดโหมด Time Attack</span><input type="checkbox" name="modeAttack"></div>
+        <div class="switch"><span>เวลา Time Attack (วินาที)</span><input type="number" name="attackSeconds" min="15"></div>
+        <div class="switch"><span>❤️ เปิดโหมด Survival</span><input type="checkbox" name="modeSurvival"></div>
+        <div class="switch"><span>จำนวนชีวิต Survival</span><input type="number" name="survivalLives" min="1" max="10"></div>
+        <div class="switch"><span>📖 เปิดโหมด Practice</span><input type="checkbox" name="modePractice"></div>
+      </div>
+      <button class="btn btn-primary btn-lg btn-block" type="submit">บันทึกการตั้งค่า</button>
+    </form>
+  </section>
+
+  <section data-pane="qr" class="hidden">
+    <div class="grid2">
+      <div class="card">
+        <h3>📱 QR Code สำหรับพนักงาน</h3>
+        <label class="field"><span>ลิงก์เว็บเกม (URL)</span><input id="qrUrl" type="url" placeholder="https://quiz.yourcompany.com/" autocomplete="off"></label>
+        <div id="qrWarn" class="alert hidden"></div>
+        <div class="qr-preview"><canvas id="qrCanvas" width="720" height="720"></canvas></div>
+        <div class="switch"><span>ใส่ไอคอนเทศกาลตรงกลาง QR</span><input type="checkbox" id="qrLogo" checked></div>
+        <div class="toolbar" style="margin:12px 0 0">
+          <button class="btn btn-primary btn-sm" id="qrDownload">⬇️ ดาวน์โหลด QR (PNG)</button>
+          <button class="btn btn-light btn-sm" id="qrCopy">🔗 คัดลอกลิงก์</button>
+          <button class="btn btn-ghost btn-sm" id="qrSave">💾 บันทึกเป็นลิงก์หลัก</button>
+        </div>
+        <p class="small muted">ลิงก์หลักจะใช้กับการ์ด “ชวนเพื่อนมาเล่น” ในหน้าเกมด้วย</p>
+      </div>
+      <div class="card">
+        <h3>🖨️ โปสเตอร์ A4 ติดประกาศ</h3>
+        <label class="field"><span>ข้อความเชิญชวน</span><input id="posterHead" maxlength="60"></label>
+        <img id="posterImg" class="poster-preview" alt="ตัวอย่างโปสเตอร์">
+        <div class="toolbar" style="margin:12px 0 0">
+          <button class="btn btn-primary btn-sm" id="posterDownload">⬇️ ดาวน์โหลดโปสเตอร์ (PNG)</button>
+          <button class="btn btn-light btn-sm" id="posterPrint">🖨️ พิมพ์ A4</button>
+        </div>
+        <p class="small muted">โปสเตอร์ใช้สีและไอคอนตามธีมเทศกาลที่เปิดอยู่</p>
+      </div>
+    </div>
+  </section>
+
+  <section data-pane="system" class="hidden">
+    <div class="card"><h3>สถานะการเชื่อมต่อ</h3><div class="kv" id="sysInfo"></div></div>
+    <div class="card"><h3>โหมดทดลอง</h3>
+      <p class="small muted" style="margin-bottom:12px">ในโหมดทดลอง ข้อมูลทั้งหมดอยู่ในเบราว์เซอร์เครื่องนี้เท่านั้น — ใส่ค่าใน <code>CONFIG</code> ด้านบนของไฟล์เพื่อเชื่อม Microsoft และ Excel บน SharePoint</p>
+      <button class="btn btn-danger btn-sm" id="resetDemo">รีเซ็ตข้อมูลทดลองทั้งหมด</button>
+    </div>
+  </section>
+</main>
+<div class="modal hidden" id="qModal">
+  <form class="sheet" id="qForm">
+    <h3 id="qModalTitle">เพิ่มคำถาม</h3>
+    <label class="field"><span>หมวด</span><input name="category" list="cats"></label>
+    <datalist id="cats"></datalist>
+    <label class="field"><span>คำถาม</span><textarea name="text" rows="3" required></textarea></label>
+    <label class="field"><span>ชุดข้อสอบ (โหมด Classic)</span><select name="set"><option value="">ไม่อยู่ในชุด (ใช้เฉพาะโหมดอื่น)</option><option value="A">ชุด A</option><option value="B">ชุด B</option><option value="C">ชุด C</option></select></label>
+    <label class="field"><span>ประเภทคำถาม</span><select name="type" id="qTypeSel"><option value="mc">เลือกตอบ (2–4 ตัวเลือก)</option><option value="tf">ถูก / ผิด</option><option value="num">เติมตัวเลข</option></select></label>
+    <div id="mcBox"><span class="small muted">ตัวเลือก (เลือก ● ข้อที่ถูก) — สูงสุด 4 ตัวเลือก</span>
+      <div id="choiceRows" style="margin:6px 0 10px"></div>
+      <button type="button" class="btn btn-ghost btn-sm" id="addChoice" style="margin-bottom:12px">＋ ตัวเลือก</button></div>
+    <div id="tfBox" class="hidden"><span class="small muted">ข้อความนี้…</span>
+      <div class="seg" style="margin:6px 0 14px"><label><input type="radio" name="tfAns" value="0" checked> ✔ ถูก</label><label><input type="radio" name="tfAns" value="1"> ✘ ผิด</label></div></div>
+    <div id="numBox" class="hidden" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <label class="field"><span>คำตอบ (ตัวเลข)</span><input name="numVal" type="number"></label>
+      <label class="field"><span>หน่วย (เช่น วัน, ครั้ง)</span><input name="numUnit"></label></div>
+    <label class="field"><span>คำอธิบายเฉลย</span><textarea name="explanation" rows="3"></textarea></label>
+    <div class="switch"><span>ใช้งานคำถามนี้</span><input type="checkbox" name="active" checked></div>
+    <div class="actions" style="grid-template-columns:1fr 1fr;margin-top:14px">
+      <button type="button" class="btn btn-light" id="qCancel">ยกเลิก</button>
+      <button type="submit" class="btn btn-primary">บันทึก</button>
+    </div>
+  </form>
+</div>
+</div>
+</template>
+
+<canvas id="confetti" class="hidden"></canvas>
+<div id="printArea"></div>
+
+<script>/* QR Code encoder — Copyright (c) 2009 Kazuhiko Arase (MIT), via qrcode-terminal (Apache-2.0). Bundled inline so the page needs no CDN. */
+window.QRLib=(function(){var M={},C={};function req(p){var k=p.replace('./','').replace('.js','');if(C[k])return C[k].exports;var m={exports:{}};C[k]=m;M[k](m,m.exports,req);return m.exports;}
+M['QRMode']=function(module,exports,require){
+module.exports = {
+    MODE_NUMBER :       1 << 0,
+    MODE_ALPHA_NUM :    1 << 1,
+    MODE_8BIT_BYTE :    1 << 2,
+    MODE_KANJI :        1 << 3
+};
+
+};
+M['QRErrorCorrectLevel']=function(module,exports,require){
+module.exports = {
+	L : 1,
+	M : 0,
+	Q : 3,
+	H : 2
+};
+
+
+};
+M['QRMaskPattern']=function(module,exports,require){
+module.exports = {
+	PATTERN000 : 0,
+	PATTERN001 : 1,
+	PATTERN010 : 2,
+	PATTERN011 : 3,
+	PATTERN100 : 4,
+	PATTERN101 : 5,
+	PATTERN110 : 6,
+	PATTERN111 : 7
+};
+
+};
+M['QRMath']=function(module,exports,require){
+var QRMath = {
+
+	glog : function(n) {
+	
+		if (n < 1) {
+			throw new Error("glog(" + n + ")");
+		}
+		
+		return QRMath.LOG_TABLE[n];
+	},
+	
+	gexp : function(n) {
+	
+		while (n < 0) {
+			n += 255;
+		}
+	
+		while (n >= 256) {
+			n -= 255;
+		}
+	
+		return QRMath.EXP_TABLE[n];
+	},
+	
+	EXP_TABLE : new Array(256),
+	
+	LOG_TABLE : new Array(256)
+
+};
+	
+for (var i = 0; i < 8; i++) {
+	QRMath.EXP_TABLE[i] = 1 << i;
+}
+for (var i = 8; i < 256; i++) {
+	QRMath.EXP_TABLE[i] = QRMath.EXP_TABLE[i - 4]
+		^ QRMath.EXP_TABLE[i - 5]
+		^ QRMath.EXP_TABLE[i - 6]
+		^ QRMath.EXP_TABLE[i - 8];
+}
+for (var i = 0; i < 255; i++) {
+	QRMath.LOG_TABLE[QRMath.EXP_TABLE[i] ] = i;
+}
+
+module.exports = QRMath;
+
+};
+M['QRPolynomial']=function(module,exports,require){
+var QRMath = require('./QRMath');
+
+function QRPolynomial(num, shift) {
+	if (num.length === undefined) {
+		throw new Error(num.length + "/" + shift);
+	}
+
+	var offset = 0;
+
+	while (offset < num.length && num[offset] === 0) {
+		offset++;
+	}
+
+	this.num = new Array(num.length - offset + shift);
+	for (var i = 0; i < num.length - offset; i++) {
+		this.num[i] = num[i + offset];
+	}
+}
+
+QRPolynomial.prototype = {
+
+	get : function(index) {
+		return this.num[index];
+	},
+	
+	getLength : function() {
+		return this.num.length;
+	},
+	
+	multiply : function(e) {
+	
+		var num = new Array(this.getLength() + e.getLength() - 1);
+	
+		for (var i = 0; i < this.getLength(); i++) {
+			for (var j = 0; j < e.getLength(); j++) {
+				num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i) ) + QRMath.glog(e.get(j) ) );
+			}
+		}
+	
+		return new QRPolynomial(num, 0);
+	},
+	
+	mod : function(e) {
+	
+		if (this.getLength() - e.getLength() < 0) {
+			return this;
+		}
+	
+		var ratio = QRMath.glog(this.get(0) ) - QRMath.glog(e.get(0) );
+	
+		var num = new Array(this.getLength() );
+		
+		for (var i = 0; i < this.getLength(); i++) {
+			num[i] = this.get(i);
+		}
+		
+		for (var x = 0; x < e.getLength(); x++) {
+			num[x] ^= QRMath.gexp(QRMath.glog(e.get(x) ) + ratio);
+		}
+	
+		// recursive call
+		return new QRPolynomial(num, 0).mod(e);
+	}
+};
+
+module.exports = QRPolynomial;
+
+};
+M['QR8bitByte']=function(module,exports,require){
+var QRMode = require('./QRMode');
+
+function QR8bitByte(data) {
+	this.mode = QRMode.MODE_8BIT_BYTE;
+	this.data = data;
+}
+
+QR8bitByte.prototype = {
+
+	getLength : function() {
+		return this.data.length;
+	},
+	
+	write : function(buffer) {
+		for (var i = 0; i < this.data.length; i++) {
+			// not JIS ...
+			buffer.put(this.data.charCodeAt(i), 8);
+		}
+	}
+};
+
+module.exports = QR8bitByte;
+
+};
+M['QRBitBuffer']=function(module,exports,require){
+function QRBitBuffer() {
+	this.buffer = [];
+	this.length = 0;
+}
+
+QRBitBuffer.prototype = {
+
+	get : function(index) {
+		var bufIndex = Math.floor(index / 8);
+		return ( (this.buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+	},
+	
+	put : function(num, length) {
+		for (var i = 0; i < length; i++) {
+			this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+		}
+	},
+	
+	getLengthInBits : function() {
+		return this.length;
+	},
+	
+	putBit : function(bit) {
+	
+		var bufIndex = Math.floor(this.length / 8);
+		if (this.buffer.length <= bufIndex) {
+			this.buffer.push(0);
+		}
+	
+		if (bit) {
+			this.buffer[bufIndex] |= (0x80 >>> (this.length % 8) );
+		}
+	
+		this.length++;
+	}
+};
+
+module.exports = QRBitBuffer;
+
+};
+M['QRRSBlock']=function(module,exports,require){
+var QRErrorCorrectLevel = require('./QRErrorCorrectLevel');
+
+function QRRSBlock(totalCount, dataCount) {
+	this.totalCount = totalCount;
+	this.dataCount  = dataCount;
+}
+
+QRRSBlock.RS_BLOCK_TABLE = [
+
+	// L
+	// M
+	// Q
+	// H
+
+	// 1
+	[1, 26, 19],
+	[1, 26, 16],
+	[1, 26, 13],
+	[1, 26, 9],
+	
+	// 2
+	[1, 44, 34],
+	[1, 44, 28],
+	[1, 44, 22],
+	[1, 44, 16],
+
+	// 3
+	[1, 70, 55],
+	[1, 70, 44],
+	[2, 35, 17],
+	[2, 35, 13],
+
+	// 4		
+	[1, 100, 80],
+	[2, 50, 32],
+	[2, 50, 24],
+	[4, 25, 9],
+	
+	// 5
+	[1, 134, 108],
+	[2, 67, 43],
+	[2, 33, 15, 2, 34, 16],
+	[2, 33, 11, 2, 34, 12],
+	
+	// 6
+	[2, 86, 68],
+	[4, 43, 27],
+	[4, 43, 19],
+	[4, 43, 15],
+	
+	// 7		
+	[2, 98, 78],
+	[4, 49, 31],
+	[2, 32, 14, 4, 33, 15],
+	[4, 39, 13, 1, 40, 14],
+	
+	// 8
+	[2, 121, 97],
+	[2, 60, 38, 2, 61, 39],
+	[4, 40, 18, 2, 41, 19],
+	[4, 40, 14, 2, 41, 15],
+	
+	// 9
+	[2, 146, 116],
+	[3, 58, 36, 2, 59, 37],
+	[4, 36, 16, 4, 37, 17],
+	[4, 36, 12, 4, 37, 13],
+	
+	// 10		
+	[2, 86, 68, 2, 87, 69],
+	[4, 69, 43, 1, 70, 44],
+	[6, 43, 19, 2, 44, 20],
+	[6, 43, 15, 2, 44, 16],
+
+	// 11
+	[4, 101, 81],
+	[1, 80, 50, 4, 81, 51],
+	[4, 50, 22, 4, 51, 23],
+	[3, 36, 12, 8, 37, 13],
+
+	// 12
+	[2, 116, 92, 2, 117, 93],
+	[6, 58, 36, 2, 59, 37],
+	[4, 46, 20, 6, 47, 21],
+	[7, 42, 14, 4, 43, 15],
+
+	// 13
+	[4, 133, 107],
+	[8, 59, 37, 1, 60, 38],
+	[8, 44, 20, 4, 45, 21],
+	[12, 33, 11, 4, 34, 12],
+
+	// 14
+	[3, 145, 115, 1, 146, 116],
+	[4, 64, 40, 5, 65, 41],
+	[11, 36, 16, 5, 37, 17],
+	[11, 36, 12, 5, 37, 13],
+
+	// 15
+	[5, 109, 87, 1, 110, 88],
+	[5, 65, 41, 5, 66, 42],
+	[5, 54, 24, 7, 55, 25],
+	[11, 36, 12],
+
+	// 16
+	[5, 122, 98, 1, 123, 99],
+	[7, 73, 45, 3, 74, 46],
+	[15, 43, 19, 2, 44, 20],
+	[3, 45, 15, 13, 46, 16],
+
+	// 17
+	[1, 135, 107, 5, 136, 108],
+	[10, 74, 46, 1, 75, 47],
+	[1, 50, 22, 15, 51, 23],
+	[2, 42, 14, 17, 43, 15],
+
+	// 18
+	[5, 150, 120, 1, 151, 121],
+	[9, 69, 43, 4, 70, 44],
+	[17, 50, 22, 1, 51, 23],
+	[2, 42, 14, 19, 43, 15],
+
+	// 19
+	[3, 141, 113, 4, 142, 114],
+	[3, 70, 44, 11, 71, 45],
+	[17, 47, 21, 4, 48, 22],
+	[9, 39, 13, 16, 40, 14],
+
+	// 20
+	[3, 135, 107, 5, 136, 108],
+	[3, 67, 41, 13, 68, 42],
+	[15, 54, 24, 5, 55, 25],
+	[15, 43, 15, 10, 44, 16],
+
+	// 21
+	[4, 144, 116, 4, 145, 117],
+	[17, 68, 42],
+	[17, 50, 22, 6, 51, 23],
+	[19, 46, 16, 6, 47, 17],
+
+	// 22
+	[2, 139, 111, 7, 140, 112],
+	[17, 74, 46],
+	[7, 54, 24, 16, 55, 25],
+	[34, 37, 13],
+
+	// 23
+	[4, 151, 121, 5, 152, 122],
+	[4, 75, 47, 14, 76, 48],
+	[11, 54, 24, 14, 55, 25],
+	[16, 45, 15, 14, 46, 16],
+
+	// 24
+	[6, 147, 117, 4, 148, 118],
+	[6, 73, 45, 14, 74, 46],
+	[11, 54, 24, 16, 55, 25],
+	[30, 46, 16, 2, 47, 17],
+
+	// 25
+	[8, 132, 106, 4, 133, 107],
+	[8, 75, 47, 13, 76, 48],
+	[7, 54, 24, 22, 55, 25],
+	[22, 45, 15, 13, 46, 16],
+
+	// 26
+	[10, 142, 114, 2, 143, 115],
+	[19, 74, 46, 4, 75, 47],
+	[28, 50, 22, 6, 51, 23],
+	[33, 46, 16, 4, 47, 17],
+
+	// 27
+	[8, 152, 122, 4, 153, 123],
+	[22, 73, 45, 3, 74, 46],
+	[8, 53, 23, 26, 54, 24],
+	[12, 45, 15, 28, 46, 16],
+
+	// 28
+	[3, 147, 117, 10, 148, 118],
+	[3, 73, 45, 23, 74, 46],
+	[4, 54, 24, 31, 55, 25],
+	[11, 45, 15, 31, 46, 16],
+
+	// 29
+	[7, 146, 116, 7, 147, 117],
+	[21, 73, 45, 7, 74, 46],
+	[1, 53, 23, 37, 54, 24],
+	[19, 45, 15, 26, 46, 16],
+
+	// 30
+	[5, 145, 115, 10, 146, 116],
+	[19, 75, 47, 10, 76, 48],
+	[15, 54, 24, 25, 55, 25],
+	[23, 45, 15, 25, 46, 16],
+
+	// 31
+	[13, 145, 115, 3, 146, 116],
+	[2, 74, 46, 29, 75, 47],
+	[42, 54, 24, 1, 55, 25],
+	[23, 45, 15, 28, 46, 16],
+
+	// 32
+	[17, 145, 115],
+	[10, 74, 46, 23, 75, 47],
+	[10, 54, 24, 35, 55, 25],
+	[19, 45, 15, 35, 46, 16],
+
+	// 33
+	[17, 145, 115, 1, 146, 116],
+	[14, 74, 46, 21, 75, 47],
+	[29, 54, 24, 19, 55, 25],
+	[11, 45, 15, 46, 46, 16],
+
+	// 34
+	[13, 145, 115, 6, 146, 116],
+	[14, 74, 46, 23, 75, 47],
+	[44, 54, 24, 7, 55, 25],
+	[59, 46, 16, 1, 47, 17],
+
+	// 35
+	[12, 151, 121, 7, 152, 122],
+	[12, 75, 47, 26, 76, 48],
+	[39, 54, 24, 14, 55, 25],
+	[22, 45, 15, 41, 46, 16],
+
+	// 36
+	[6, 151, 121, 14, 152, 122],
+	[6, 75, 47, 34, 76, 48],
+	[46, 54, 24, 10, 55, 25],
+	[2, 45, 15, 64, 46, 16],
+
+	// 37
+	[17, 152, 122, 4, 153, 123],
+	[29, 74, 46, 14, 75, 47],
+	[49, 54, 24, 10, 55, 25],
+	[24, 45, 15, 46, 46, 16],
+
+	// 38
+	[4, 152, 122, 18, 153, 123],
+	[13, 74, 46, 32, 75, 47],
+	[48, 54, 24, 14, 55, 25],
+	[42, 45, 15, 32, 46, 16],
+
+	// 39
+	[20, 147, 117, 4, 148, 118],
+	[40, 75, 47, 7, 76, 48],
+	[43, 54, 24, 22, 55, 25],
+	[10, 45, 15, 67, 46, 16],
+
+	// 40
+	[19, 148, 118, 6, 149, 119],
+	[18, 75, 47, 31, 76, 48],
+	[34, 54, 24, 34, 55, 25],
+	[20, 45, 15, 61, 46, 16]
+];
+
+QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectLevel) {
+	
+	var rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
+	
+	if (rsBlock === undefined) {
+		throw new Error("bad rs block @ typeNumber:" + typeNumber + "/errorCorrectLevel:" + errorCorrectLevel);
+	}
+
+	var length = rsBlock.length / 3;
+	
+	var list = [];
+	
+	for (var i = 0; i < length; i++) {
+
+		var count = rsBlock[i * 3 + 0];
+		var totalCount = rsBlock[i * 3 + 1];
+		var dataCount  = rsBlock[i * 3 + 2];
+
+		for (var j = 0; j < count; j++) {
+			list.push(new QRRSBlock(totalCount, dataCount) );	
+		}
+	}
+	
+	return list;
+};
+
+QRRSBlock.getRsBlockTable = function(typeNumber, errorCorrectLevel) {
+
+	switch(errorCorrectLevel) {
+	case QRErrorCorrectLevel.L :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+	case QRErrorCorrectLevel.M :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+	case QRErrorCorrectLevel.Q :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+	case QRErrorCorrectLevel.H :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+	default :
+		return undefined;
+	}
+};
+
+module.exports = QRRSBlock;
+
+};
+M['QRUtil']=function(module,exports,require){
+var QRMode = require('./QRMode');
+var QRPolynomial = require('./QRPolynomial');
+var QRMath = require('./QRMath');
+var QRMaskPattern = require('./QRMaskPattern');
+
+var QRUtil = {
+
+    PATTERN_POSITION_TABLE : [
+        [],
+        [6, 18],
+        [6, 22],
+        [6, 26],
+        [6, 30],
+        [6, 34],
+        [6, 22, 38],
+        [6, 24, 42],
+        [6, 26, 46],
+        [6, 28, 50],
+        [6, 30, 54],        
+        [6, 32, 58],
+        [6, 34, 62],
+        [6, 26, 46, 66],
+        [6, 26, 48, 70],
+        [6, 26, 50, 74],
+        [6, 30, 54, 78],
+        [6, 30, 56, 82],
+        [6, 30, 58, 86],
+        [6, 34, 62, 90],
+        [6, 28, 50, 72, 94],
+        [6, 26, 50, 74, 98],
+        [6, 30, 54, 78, 102],
+        [6, 28, 54, 80, 106],
+        [6, 32, 58, 84, 110],
+        [6, 30, 58, 86, 114],
+        [6, 34, 62, 90, 118],
+        [6, 26, 50, 74, 98, 122],
+        [6, 30, 54, 78, 102, 126],
+        [6, 26, 52, 78, 104, 130],
+        [6, 30, 56, 82, 108, 134],
+        [6, 34, 60, 86, 112, 138],
+        [6, 30, 58, 86, 114, 142],
+        [6, 34, 62, 90, 118, 146],
+        [6, 30, 54, 78, 102, 126, 150],
+        [6, 24, 50, 76, 102, 128, 154],
+        [6, 28, 54, 80, 106, 132, 158],
+        [6, 32, 58, 84, 110, 136, 162],
+        [6, 26, 54, 82, 110, 138, 166],
+        [6, 30, 58, 86, 114, 142, 170]
+    ],
+
+    G15 : (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
+    G18 : (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
+    G15_MASK : (1 << 14) | (1 << 12) | (1 << 10)    | (1 << 4) | (1 << 1),
+
+    getBCHTypeInfo : function(data) {
+        var d = data << 10;
+        while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) >= 0) {
+            d ^= (QRUtil.G15 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) ) );    
+        }
+        return ( (data << 10) | d) ^ QRUtil.G15_MASK;
+    },
+
+    getBCHTypeNumber : function(data) {
+        var d = data << 12;
+        while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) >= 0) {
+            d ^= (QRUtil.G18 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) ) );    
+        }
+        return (data << 12) | d;
+    },
+
+    getBCHDigit : function(data) {
+
+        var digit = 0;
+
+        while (data !== 0) {
+            digit++;
+            data >>>= 1;
+        }
+
+        return digit;
+    },
+
+    getPatternPosition : function(typeNumber) {
+        return QRUtil.PATTERN_POSITION_TABLE[typeNumber - 1];
+    },
+
+    getMask : function(maskPattern, i, j) {
+        
+        switch (maskPattern) {
+            
+        case QRMaskPattern.PATTERN000 : return (i + j) % 2 === 0;
+        case QRMaskPattern.PATTERN001 : return i % 2 === 0;
+        case QRMaskPattern.PATTERN010 : return j % 3 === 0;
+        case QRMaskPattern.PATTERN011 : return (i + j) % 3 === 0;
+        case QRMaskPattern.PATTERN100 : return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 === 0;
+        case QRMaskPattern.PATTERN101 : return (i * j) % 2 + (i * j) % 3 === 0;
+        case QRMaskPattern.PATTERN110 : return ( (i * j) % 2 + (i * j) % 3) % 2 === 0;
+        case QRMaskPattern.PATTERN111 : return ( (i * j) % 3 + (i + j) % 2) % 2 === 0;
+
+        default :
+            throw new Error("bad maskPattern:" + maskPattern);
+        }
+    },
+
+    getErrorCorrectPolynomial : function(errorCorrectLength) {
+
+        var a = new QRPolynomial([1], 0);
+
+        for (var i = 0; i < errorCorrectLength; i++) {
+            a = a.multiply(new QRPolynomial([1, QRMath.gexp(i)], 0) );
+        }
+
+        return a;
+    },
+
+    getLengthInBits : function(mode, type) {
+
+        if (1 <= type && type < 10) {
+
+            // 1 - 9
+
+            switch(mode) {
+            case QRMode.MODE_NUMBER     : return 10;
+            case QRMode.MODE_ALPHA_NUM  : return 9;
+            case QRMode.MODE_8BIT_BYTE  : return 8;
+            case QRMode.MODE_KANJI      : return 8;
+            default :
+                throw new Error("mode:" + mode);
+            }
+
+        } else if (type < 27) {
+
+            // 10 - 26
+
+            switch(mode) {
+            case QRMode.MODE_NUMBER     : return 12;
+            case QRMode.MODE_ALPHA_NUM  : return 11;
+            case QRMode.MODE_8BIT_BYTE  : return 16;
+            case QRMode.MODE_KANJI      : return 10;
+            default :
+                throw new Error("mode:" + mode);
+            }
+
+        } else if (type < 41) {
+
+            // 27 - 40
+
+            switch(mode) {
+            case QRMode.MODE_NUMBER     : return 14;
+            case QRMode.MODE_ALPHA_NUM  : return 13;
+            case QRMode.MODE_8BIT_BYTE  : return 16;
+            case QRMode.MODE_KANJI      : return 12;
+            default :
+                throw new Error("mode:" + mode);
+            }
+
+        } else {
+            throw new Error("type:" + type);
+        }
+    },
+
+    getLostPoint : function(qrCode) {
+        
+        var moduleCount = qrCode.getModuleCount();
+        var lostPoint = 0;
+        var row = 0; 
+        var col = 0;
+
+        
+        // LEVEL1
+        
+        for (row = 0; row < moduleCount; row++) {
+
+            for (col = 0; col < moduleCount; col++) {
+
+                var sameCount = 0;
+                var dark = qrCode.isDark(row, col);
+
+                for (var r = -1; r <= 1; r++) {
+
+                    if (row + r < 0 || moduleCount <= row + r) {
+                        continue;
+                    }
+
+                    for (var c = -1; c <= 1; c++) {
+
+                        if (col + c < 0 || moduleCount <= col + c) {
+                            continue;
+                        }
+
+                        if (r === 0 && c === 0) {
+                            continue;
+                        }
+
+                        if (dark === qrCode.isDark(row + r, col + c) ) {
+                            sameCount++;
+                        }
+                    }
+                }
+
+                if (sameCount > 5) {
+                    lostPoint += (3 + sameCount - 5);
+                }
+            }
+        }
+
+        // LEVEL2
+
+        for (row = 0; row < moduleCount - 1; row++) {
+            for (col = 0; col < moduleCount - 1; col++) {
+                var count = 0;
+                if (qrCode.isDark(row,     col    ) ) count++;
+                if (qrCode.isDark(row + 1, col    ) ) count++;
+                if (qrCode.isDark(row,     col + 1) ) count++;
+                if (qrCode.isDark(row + 1, col + 1) ) count++;
+                if (count === 0 || count === 4) {
+                    lostPoint += 3;
+                }
+            }
+        }
+
+        // LEVEL3
+
+        for (row = 0; row < moduleCount; row++) {
+            for (col = 0; col < moduleCount - 6; col++) {
+                if (qrCode.isDark(row, col) && 
+                        !qrCode.isDark(row, col + 1) && 
+                         qrCode.isDark(row, col + 2) && 
+                         qrCode.isDark(row, col + 3) && 
+                         qrCode.isDark(row, col + 4) && 
+                        !qrCode.isDark(row, col + 5) && 
+                         qrCode.isDark(row, col + 6) ) {
+                    lostPoint += 40;
+                }
+            }
+        }
+
+        for (col = 0; col < moduleCount; col++) {
+            for (row = 0; row < moduleCount - 6; row++) {
+                if (qrCode.isDark(row, col) &&
+                        !qrCode.isDark(row + 1, col) &&
+                         qrCode.isDark(row + 2, col) &&
+                         qrCode.isDark(row + 3, col) &&
+                         qrCode.isDark(row + 4, col) &&
+                        !qrCode.isDark(row + 5, col) &&
+                         qrCode.isDark(row + 6, col) ) {
+                    lostPoint += 40;
+                }
+            }
+        }
+
+        // LEVEL4
+        
+        var darkCount = 0;
+
+        for (col = 0; col < moduleCount; col++) {
+            for (row = 0; row < moduleCount; row++) {
+                if (qrCode.isDark(row, col) ) {
+                    darkCount++;
+                }
+            }
+        }
+        
+        var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+        lostPoint += ratio * 10;
+
+        return lostPoint;       
+    }
+
+};
+
+module.exports = QRUtil;
+
+};
+M['index']=function(module,exports,require){
+//---------------------------------------------------------------------
+// QRCode for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//   http://www.opensource.org/licenses/mit-license.php
+//
+// The word "QR Code" is registered trademark of 
+// DENSO WAVE INCORPORATED
+//   http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+// Modified to work in node for this project (and some refactoring)
+//---------------------------------------------------------------------
+
+var QR8bitByte = require('./QR8bitByte');
+var QRUtil = require('./QRUtil');
+var QRPolynomial = require('./QRPolynomial');
+var QRRSBlock = require('./QRRSBlock');
+var QRBitBuffer = require('./QRBitBuffer');
+
+function QRCode(typeNumber, errorCorrectLevel) {
+	this.typeNumber = typeNumber;
+	this.errorCorrectLevel = errorCorrectLevel;
+	this.modules = null;
+	this.moduleCount = 0;
+	this.dataCache = null;
+	this.dataList = [];
+}
+
+QRCode.prototype = {
+	
+	addData : function(data) {
+		var newData = new QR8bitByte(data);
+		this.dataList.push(newData);
+		this.dataCache = null;
+	},
+	
+	isDark : function(row, col) {
+		if (row < 0 || this.moduleCount <= row || col < 0 || this.moduleCount <= col) {
+			throw new Error(row + "," + col);
+		}
+		return this.modules[row][col];
+	},
+
+	getModuleCount : function() {
+		return this.moduleCount;
+	},
+	
+	make : function() {
+		// Calculate automatically typeNumber if provided is < 1
+		if (this.typeNumber < 1 ){
+			var typeNumber = 1;
+			for (typeNumber = 1; typeNumber < 40; typeNumber++) {
+				var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, this.errorCorrectLevel);
+
+				var buffer = new QRBitBuffer();
+				var totalDataCount = 0;
+				for (var i = 0; i < rsBlocks.length; i++) {
+					totalDataCount += rsBlocks[i].dataCount;
+				}
+
+				for (var x = 0; x < this.dataList.length; x++) {
+					var data = this.dataList[x];
+					buffer.put(data.mode, 4);
+					buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber) );
+					data.write(buffer);
+				}
+				if (buffer.getLengthInBits() <= totalDataCount * 8)
+					break;
+			}
+			this.typeNumber = typeNumber;
+		}
+		this.makeImpl(false, this.getBestMaskPattern() );
+	},
+	
+	makeImpl : function(test, maskPattern) {
+		
+		this.moduleCount = this.typeNumber * 4 + 17;
+		this.modules = new Array(this.moduleCount);
+		
+		for (var row = 0; row < this.moduleCount; row++) {
+			
+			this.modules[row] = new Array(this.moduleCount);
+			
+			for (var col = 0; col < this.moduleCount; col++) {
+				this.modules[row][col] = null;//(col + row) % 3;
+			}
+		}
+	
+		this.setupPositionProbePattern(0, 0);
+		this.setupPositionProbePattern(this.moduleCount - 7, 0);
+		this.setupPositionProbePattern(0, this.moduleCount - 7);
+		this.setupPositionAdjustPattern();
+		this.setupTimingPattern();
+		this.setupTypeInfo(test, maskPattern);
+		
+		if (this.typeNumber >= 7) {
+			this.setupTypeNumber(test);
+		}
+	
+		if (this.dataCache === null) {
+			this.dataCache = QRCode.createData(this.typeNumber, this.errorCorrectLevel, this.dataList);
+		}
+	
+		this.mapData(this.dataCache, maskPattern);
+	},
+
+	setupPositionProbePattern : function(row, col)  {
+		
+		for (var r = -1; r <= 7; r++) {
+			
+			if (row + r <= -1 || this.moduleCount <= row + r) continue;
+			
+			for (var c = -1; c <= 7; c++) {
+				
+				if (col + c <= -1 || this.moduleCount <= col + c) continue;
+				
+				if ( (0 <= r && r <= 6 && (c === 0 || c === 6) ) || 
+                     (0 <= c && c <= 6 && (r === 0 || r === 6) ) || 
+                     (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+					this.modules[row + r][col + c] = true;
+				} else {
+					this.modules[row + r][col + c] = false;
+				}
+			}		
+		}		
+	},
+	
+	getBestMaskPattern : function() {
+	
+		var minLostPoint = 0;
+		var pattern = 0;
+	
+		for (var i = 0; i < 8; i++) {
+			
+			this.makeImpl(true, i);
+	
+			var lostPoint = QRUtil.getLostPoint(this);
+	
+			if (i === 0 || minLostPoint >  lostPoint) {
+				minLostPoint = lostPoint;
+				pattern = i;
+			}
+		}
+	
+		return pattern;
+	},
+	
+	createMovieClip : function(target_mc, instance_name, depth) {
+	
+		var qr_mc = target_mc.createEmptyMovieClip(instance_name, depth);
+		var cs = 1;
+	
+		this.make();
+
+		for (var row = 0; row < this.modules.length; row++) {
+			
+			var y = row * cs;
+			
+			for (var col = 0; col < this.modules[row].length; col++) {
+	
+				var x = col * cs;
+				var dark = this.modules[row][col];
+			
+				if (dark) {
+					qr_mc.beginFill(0, 100);
+					qr_mc.moveTo(x, y);
+					qr_mc.lineTo(x + cs, y);
+					qr_mc.lineTo(x + cs, y + cs);
+					qr_mc.lineTo(x, y + cs);
+					qr_mc.endFill();
+				}
+			}
+		}
+		
+		return qr_mc;
+	},
+
+	setupTimingPattern : function() {
+		
+		for (var r = 8; r < this.moduleCount - 8; r++) {
+			if (this.modules[r][6] !== null) {
+				continue;
+			}
+			this.modules[r][6] = (r % 2 === 0);
+		}
+	
+		for (var c = 8; c < this.moduleCount - 8; c++) {
+			if (this.modules[6][c] !== null) {
+				continue;
+			}
+			this.modules[6][c] = (c % 2 === 0);
+		}
+	},
+	
+	setupPositionAdjustPattern : function() {
+	
+		var pos = QRUtil.getPatternPosition(this.typeNumber);
+		
+		for (var i = 0; i < pos.length; i++) {
+		
+			for (var j = 0; j < pos.length; j++) {
+			
+				var row = pos[i];
+				var col = pos[j];
+				
+				if (this.modules[row][col] !== null) {
+					continue;
+				}
+				
+				for (var r = -2; r <= 2; r++) {
+				
+					for (var c = -2; c <= 2; c++) {
+					
+						if (Math.abs(r) === 2 || 
+                            Math.abs(c) === 2 ||
+                            (r === 0 && c === 0) ) {
+							this.modules[row + r][col + c] = true;
+						} else {
+							this.modules[row + r][col + c] = false;
+						}
+					}
+				}
+			}
+		}
+	},
+	
+	setupTypeNumber : function(test) {
+	
+		var bits = QRUtil.getBCHTypeNumber(this.typeNumber);
+        var mod;
+	
+		for (var i = 0; i < 18; i++) {
+			mod = (!test && ( (bits >> i) & 1) === 1);
+			this.modules[Math.floor(i / 3)][i % 3 + this.moduleCount - 8 - 3] = mod;
+		}
+	
+		for (var x = 0; x < 18; x++) {
+			mod = (!test && ( (bits >> x) & 1) === 1);
+			this.modules[x % 3 + this.moduleCount - 8 - 3][Math.floor(x / 3)] = mod;
+		}
+	},
+	
+	setupTypeInfo : function(test, maskPattern) {
+	
+		var data = (this.errorCorrectLevel << 3) | maskPattern;
+		var bits = QRUtil.getBCHTypeInfo(data);
+        var mod;
+	
+		// vertical		
+		for (var v = 0; v < 15; v++) {
+	
+			mod = (!test && ( (bits >> v) & 1) === 1);
+	
+			if (v < 6) {
+				this.modules[v][8] = mod;
+			} else if (v < 8) {
+				this.modules[v + 1][8] = mod;
+			} else {
+				this.modules[this.moduleCount - 15 + v][8] = mod;
+			}
+		}
+	
+		// horizontal
+		for (var h = 0; h < 15; h++) {
+	
+			mod = (!test && ( (bits >> h) & 1) === 1);
+			
+			if (h < 8) {
+				this.modules[8][this.moduleCount - h - 1] = mod;
+			} else if (h < 9) {
+				this.modules[8][15 - h - 1 + 1] = mod;
+			} else {
+				this.modules[8][15 - h - 1] = mod;
+			}
+		}
+	
+		// fixed module
+		this.modules[this.moduleCount - 8][8] = (!test);
+	
+	},
+	
+	mapData : function(data, maskPattern) {
+		
+		var inc = -1;
+		var row = this.moduleCount - 1;
+		var bitIndex = 7;
+		var byteIndex = 0;
+		
+		for (var col = this.moduleCount - 1; col > 0; col -= 2) {
+	
+			if (col === 6) col--;
+	
+			while (true) {
+	
+				for (var c = 0; c < 2; c++) {
+					
+					if (this.modules[row][col - c] === null) {
+						
+						var dark = false;
+	
+						if (byteIndex < data.length) {
+							dark = ( ( (data[byteIndex] >>> bitIndex) & 1) === 1);
+						}
+	
+						var mask = QRUtil.getMask(maskPattern, row, col - c);
+	
+						if (mask) {
+							dark = !dark;
+						}
+						
+						this.modules[row][col - c] = dark;
+						bitIndex--;
+	
+						if (bitIndex === -1) {
+							byteIndex++;
+							bitIndex = 7;
+						}
+					}
+				}
+								
+				row += inc;
+	
+				if (row < 0 || this.moduleCount <= row) {
+					row -= inc;
+					inc = -inc;
+					break;
+				}
+			}
+		}
+		
+	}
+
+};
+
+QRCode.PAD0 = 0xEC;
+QRCode.PAD1 = 0x11;
+
+QRCode.createData = function(typeNumber, errorCorrectLevel, dataList) {
+	
+	var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
+	
+	var buffer = new QRBitBuffer();
+	
+	for (var i = 0; i < dataList.length; i++) {
+		var data = dataList[i];
+		buffer.put(data.mode, 4);
+		buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber) );
+		data.write(buffer);
+	}
+
+	// calc num max data.
+	var totalDataCount = 0;
+	for (var x = 0; x < rsBlocks.length; x++) {
+		totalDataCount += rsBlocks[x].dataCount;
+	}
+
+	if (buffer.getLengthInBits() > totalDataCount * 8) {
+		throw new Error("code length overflow. (" + 
+            buffer.getLengthInBits() + 
+            ">" +  
+            totalDataCount * 8 + 
+            ")");
+	}
+
+	// end code
+	if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+		buffer.put(0, 4);
+	}
+
+	// padding
+	while (buffer.getLengthInBits() % 8 !== 0) {
+		buffer.putBit(false);
+	}
+
+	// padding
+	while (true) {
+		
+		if (buffer.getLengthInBits() >= totalDataCount * 8) {
+			break;
+		}
+		buffer.put(QRCode.PAD0, 8);
+		
+		if (buffer.getLengthInBits() >= totalDataCount * 8) {
+			break;
+		}
+		buffer.put(QRCode.PAD1, 8);
+	}
+
+	return QRCode.createBytes(buffer, rsBlocks);
+};
+
+QRCode.createBytes = function(buffer, rsBlocks) {
+
+	var offset = 0;
+	
+	var maxDcCount = 0;
+	var maxEcCount = 0;
+	
+	var dcdata = new Array(rsBlocks.length);
+	var ecdata = new Array(rsBlocks.length);
+	
+	for (var r = 0; r < rsBlocks.length; r++) {
+
+		var dcCount = rsBlocks[r].dataCount;
+		var ecCount = rsBlocks[r].totalCount - dcCount;
+
+		maxDcCount = Math.max(maxDcCount, dcCount);
+		maxEcCount = Math.max(maxEcCount, ecCount);
+		
+		dcdata[r] = new Array(dcCount);
+		
+		for (var i = 0; i < dcdata[r].length; i++) {
+			dcdata[r][i] = 0xff & buffer.buffer[i + offset];
+		}
+		offset += dcCount;
+		
+		var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+		var rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+		var modPoly = rawPoly.mod(rsPoly);
+		ecdata[r] = new Array(rsPoly.getLength() - 1);
+		for (var x = 0; x < ecdata[r].length; x++) {
+            var modIndex = x + modPoly.getLength() - ecdata[r].length;
+			ecdata[r][x] = (modIndex >= 0)? modPoly.get(modIndex) : 0;
+		}
+
+	}
+	
+	var totalCodeCount = 0;
+	for (var y = 0; y < rsBlocks.length; y++) {
+		totalCodeCount += rsBlocks[y].totalCount;
+	}
+
+	var data = new Array(totalCodeCount);
+	var index = 0;
+
+	for (var z = 0; z < maxDcCount; z++) {
+		for (var s = 0; s < rsBlocks.length; s++) {
+			if (z < dcdata[s].length) {
+				data[index++] = dcdata[s][z];
+			}
+		}
+	}
+
+	for (var xx = 0; xx < maxEcCount; xx++) {
+		for (var t = 0; t < rsBlocks.length; t++) {
+			if (xx < ecdata[t].length) {
+				data[index++] = ecdata[t][xx];
+			}
+		}
+	}
+
+	return data;
+
+};
+
+module.exports = QRCode;
+
+};
+return {QRCode:req('index'),Level:req('QRErrorCorrectLevel')};})();</script>
+<script src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js" integrity="sha384-PARf28kmic36Ve+O3DnUerRXFtOQ7ZDqRDGpLcbljly5/N39T2OV3kt3QsWOKeAX" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+'use strict';
+/* =================================================================
+   DATA
+================================================================= */
+const DEFAULT_QUESTIONS = [
+ {
+  "id": "q01",
+  "category": "วินัยร้ายแรง",
+  "text": "ระเบียบข้อบังคับฯ ฉบับล่าสุด ซึ่งเพิ่มเติม “ระเบียบวินัยว่าด้วยเรื่องวินัยร้ายแรง ข้อ 1.1 – 1.25” ลงวันที่เท่าใด?",
+  "choices": [
+   "1 ม.ค. 2567",
+   "4 พ.ย. 2567",
+   "5 มี.ค. 2568",
+   "1 ต.ค. 2568"
+  ],
+  "answer": 1,
+  "explanation": "ระเบียบข้อบังคับฯ ฉบับล่าสุดลงวันที่ 4 พ.ย. 2567 เพิ่มเติมเรื่องวินัยร้ายแรง ข้อ 1.1 – 1.25",
+  "active": true,
+  "type": "mc",
+  "set": "C"
+ },
+ {
+  "id": "q02",
+  "category": "วินัยร้ายแรง",
+  "text": "ข้อใด “ไม่ใช่” ความผิดวินัยร้ายแรงตามระเบียบข้อบังคับฯ ฉบับล่าสุด?",
+  "choices": [
+   "เปิดเผยข้อมูลความลับของบริษัทฯ",
+   "ทำธุรกิจการค้าที่แข่งขันกับบริษัทฯ",
+   "ลาพักร้อนตามสิทธิโดยได้รับอนุมัติล่วงหน้า",
+   "เล่นการพนันในบริษัทฯ"
+  ],
+  "answer": 2,
+  "explanation": "การลาตามสิทธิที่ได้รับอนุมัติไม่ใช่ความผิด ส่วนข้ออื่น ๆ อยู่ในรายการวินัยร้ายแรง ข้อ 1.1 – 1.25",
+  "active": true,
+  "type": "mc",
+  "set": "A"
+ },
+ {
+  "id": "q03",
+  "category": "ขาดงาน / ละทิ้งหน้าที่",
+  "text": "พนักงานขาดงานติดต่อกันกี่วัน โดยไม่มีเหตุสมควร จึงเข้าข่ายวินัยร้ายแรง?",
+  "choices": [
+   "1 วัน",
+   "2 วัน",
+   "3 วัน",
+   "5 วัน"
+  ],
+  "answer": 2,
+  "explanation": "การขาดงานติดต่อกัน 3 วันโดยไม่มีเหตุสมควร อยู่ในรายการวินัยร้ายแรงของระเบียบข้อบังคับฯ",
+  "active": true,
+  "type": "mc",
+  "set": "C"
+ },
+ {
+  "id": "q04",
+  "category": "ขาดงาน / ละทิ้งหน้าที่",
+  "text": "“ขาดงาน” ตามความหมายของบริษัทฯ คือข้อใด?",
+  "choices": [
+   "มาทำงานสายเกิน 30 นาที",
+   "ไม่เข้ามาทำงานเลยทั้งวันในวันทำงานปกติ โดยไม่แจ้งหัวหน้างานและไม่มีเหตุอันสมควร",
+   "มาทำงานแต่ออกไปทำธุระช่วงบ่ายโดยไม่แจ้ง",
+   "ลืมสแกนนิ้วตอนเลิกงาน"
+  ],
+  "answer": 1,
+  "explanation": "ขาดงาน คือ ไม่มาทำงานทั้งวันในวันทำงานปกติ ติดต่อไม่ได้ และไม่ได้แจ้งเหตุผลให้หัวหน้างานทราบ",
+  "active": true,
+  "type": "mc",
+  "set": "B"
+ },
+ {
+  "id": "q05",
+  "category": "ขาดงาน / ละทิ้งหน้าที่",
+  "text": "พนักงานแบ่งเที่ยวบินกันทำเองระหว่างเพื่อนร่วมงาน โดยหัวหน้างานไม่ทราบ ถือเป็นความผิดเรื่องใด?",
+  "choices": [
+   "การมาสาย",
+   "การขาดงาน",
+   "การละทิ้งหน้าที่",
+   "ไม่ผิด เพราะงานเสร็จ"
+  ],
+  "answer": 2,
+  "explanation": "เป็นการละเลย หลีกเลี่ยง เปลี่ยน ย้ายงานโดยไม่ได้รับอนุญาตจากผู้บังคับบัญชา (ข้อ 1.6) จึงเป็นการละทิ้งหน้าที่",
+  "active": true,
+  "type": "mc",
+  "set": "A"
+ },
+ {
+  "id": "q06",
+  "category": "ขาดงาน / ละทิ้งหน้าที่",
+  "text": "พนักงานแอบหลับในเวลาทำงาน โดยอ้างว่าป่วยจึงกินยาแล้วเผลอหลับไป ถือเป็นความผิดเรื่องใด?",
+  "choices": [
+   "การละทิ้งหน้าที่",
+   "การลาป่วยเท็จ",
+   "การขาดงาน",
+   "ไม่ผิด เพราะป่วยจริง"
+  ],
+  "answer": 0,
+  "explanation": "มาทำงานแต่ละทิ้งการปฏิบัติงานช่วงเวลาหนึ่งโดยไม่แจ้งหัวหน้างาน ถือเป็นการละทิ้งหน้าที่ — หากป่วยควรแจ้งหัวหน้าและยื่นลาให้ถูกต้อง",
+  "active": true,
+  "type": "mc",
+  "set": "B"
+ },
+ {
+  "id": "q07",
+  "category": "การลา",
+  "text": "พนักงานลาป่วยโดยได้รับค่าจ้างได้ปีหนึ่งไม่เกินกี่วัน?",
+  "choices": [
+   "15 วัน",
+   "20 วัน",
+   "30 วัน",
+   "45 วัน"
+  ],
+  "answer": 2,
+  "explanation": "ลาป่วยได้ตามที่ป่วยจริง แต่บริษัทฯ จ่ายค่าจ้างให้ปีหนึ่งไม่เกิน 30 วัน",
+  "active": true,
+  "type": "mc",
+  "set": "B"
+ },
+ {
+  "id": "q08",
+  "category": "การลา",
+  "text": "ลาป่วยติดต่อกันเกินกี่วัน ต้องมีใบรับรองแพทย์?",
+  "choices": [
+   "1 วัน",
+   "2 วัน",
+   "3 วัน",
+   "7 วัน"
+  ],
+  "answer": 2,
+  "explanation": "ตามระเบียบข้อบังคับฯ ลาป่วยติดต่อกันเกิน 3 วัน ต้องมีใบรับรองแพทย์",
+  "active": true,
+  "type": "mc",
+  "set": "A"
+ },
+ {
+  "id": "q09",
+  "category": "การลา",
+  "text": "พนักงาน “รายเดือน” ลากิจได้ปีละกี่วัน?",
+  "choices": [
+   "3 วัน",
+   "5 วัน",
+   "6 วัน",
+   "10 วัน"
+  ],
+  "answer": 1,
+  "explanation": "พนักงานรายเดือนลากิจได้ปีละ 5 วัน (พนักงานรายวัน ปีละ 3 วัน)",
+  "active": true,
+  "type": "mc",
+  "set": "C"
+ },
+ {
+  "id": "q10",
+  "category": "การลา",
+  "text": "พนักงาน “รายวัน” ลากิจได้ปีละกี่วัน?",
+  "choices": [
+   "2 วัน",
+   "3 วัน",
+   "5 วัน",
+   "7 วัน"
+  ],
+  "answer": 1,
+  "explanation": "พนักงานรายวันลากิจได้ปีละ 3 วัน (พนักงานรายเดือน ปีละ 5 วัน)",
+  "active": true,
+  "type": "mc",
+  "set": "A"
+ },
+ {
+  "id": "q11",
+  "category": "การลา",
+  "text": "ลากิจติดต่อกันได้ครั้งละไม่เกินกี่วัน?",
+  "choices": [
+   "1 วัน",
+   "2 วัน",
+   "3 วัน",
+   "5 วัน"
+  ],
+  "answer": 1,
+  "explanation": "ลากิจติดต่อกันได้ครั้งละไม่เกิน 2 วัน และต้องลาล่วงหน้าพร้อมชี้แจงเหตุจำเป็น",
+  "active": true,
+  "type": "mc",
+  "set": "C"
+ },
+ {
+  "id": "q12",
+  "category": "การลา",
+  "text": "ข้อใดถูกต้องเกี่ยวกับการลาตามระเบียบข้อบังคับฯ?",
+  "choices": [
+   "ลาป่วยต่อด้วยลากิจได้ ถ้ายังไม่หมดสิทธิ",
+   "ห้ามลาป่วยและลากิจต่อเนื่องกัน",
+   "ลากิจไม่ต้องแจ้งเหตุผล",
+   "ลาป่วยไม่ต้องแจ้งหัวหน้า ยื่นในระบบอย่างเดียว"
+  ],
+  "answer": 1,
+  "explanation": "ระเบียบกำหนดห้ามลาป่วยและลากิจต่อเนื่องกัน ลาป่วยต้องแจ้งผู้บังคับบัญชา และลากิจต้องชี้แจงเหตุจำเป็น",
+  "active": true,
+  "type": "mc",
+  "set": "B"
+ },
+ {
+  "id": "q13",
+  "category": "การลา",
+  "text": "กรณีลาฉุกเฉิน (ลาป่วย/ลากิจ) พนักงานต้องปฏิบัติอย่างไร?",
+  "choices": [
+   "ไม่ต้องทำอะไร HR จะบันทึกให้",
+   "แจ้งเพื่อนร่วมงานแทนหัวหน้าก็ได้",
+   "แจ้งหัวหน้างานก่อนทุกครั้ง และยื่นลาในระบบ Humansoft ทันทีเมื่อกลับมาทำงาน",
+   "ยื่นลาย้อนหลังภายในสิ้นปี"
+  ],
+  "answer": 2,
+  "explanation": "ลาฉุกเฉินต้องแจ้งหัวหน้างานก่อนทุกครั้ง และเมื่อกลับมาทำงานต้องยื่นลาในระบบทันที",
+  "active": true,
+  "type": "mc",
+  "set": "B"
+ },
+ {
+  "id": "q14",
+  "category": "การลา",
+  "text": "พนักงานที่หยุดงานแต่ “ลาไม่ลงระบบ” จะถูกพิจารณามาตรการทางวินัยในเรื่องใด?",
+  "choices": [
+   "มาสาย",
+   "ขาดงาน",
+   "ลาเท็จ",
+   "ไม่มีโทษ เพราะแจ้งปากเปล่าแล้ว"
+  ],
+  "answer": 1,
+  "explanation": "การลาทุกประเภทต้องยื่นในระบบ Humansoft และได้รับอนุมัติ หากไม่ลงระบบจะถูกพิจารณามาตรการทางวินัยเรื่องขาดงาน",
+  "active": true,
+  "type": "mc",
+  "set": "C"
+ },
+ {
+  "id": "q15",
+  "category": "การลา",
+  "text": "ข้อใด “ไม่ใช่” ลักษณะของการลาป่วยเป็นอาจิณ?",
+  "choices": [
+   "ลาป่วยติดกับวันหยุดหรือวันลาอื่น ๆ",
+   "ลาป่วยทุกเดือน เดือนละ 1–2 วันเรื่อยมา",
+   "ลาป่วยด้วยอาการปวดหัว ท้องเสีย หรือไม่แจ้งสาเหตุ",
+   "ลาป่วย 4 วันครั้งเดียวในปี พร้อมใบรับรองแพทย์"
+  ],
+  "answer": 3,
+  "explanation": "ลักษณะป่วยเป็นอาจิณ ได้แก่ ลาติดวันหยุด ลาทุกเดือน ลาด้วยอาการทั่วไปหรือไม่แจ้งสาเหตุ และลาเกิน 30 วัน/ปีโดยไม่มีหลักฐาน",
+  "active": true,
+  "type": "mc",
+  "set": "B"
+ },
+ {
+  "id": "q16",
+  "category": "การลา",
+  "text": "หากพนักงานลาป่วยบ่อยจนน่าสงสัย บริษัทฯ มีมาตรการอย่างไร?",
+  "choices": [
+   "หักเงินเดือนทันที",
+   "ให้พนักงานไปตรวจกับแพทย์ที่บริษัทฯ จัดหาให้ หากไม่ได้ป่วยจริงถือเป็นการลาป่วยเท็จ",
+   "ห้ามลาป่วยอีกตลอดปี",
+   "ย้ายแผนกทันที"
+  ],
+  "answer": 1,
+  "explanation": "บริษัทฯ มีสิทธิ์ให้พนักงานตรวจกับแพทย์ที่บริษัทจัดหา หากไม่ได้ป่วยจริงจะถือเป็นการลาป่วยเท็จ และอาจพิจารณาเลิกจ้างเพราะหย่อนสมรรถภาพได้",
+  "active": true,
+  "type": "mc",
+  "set": "A"
+ },
+ {
+  "id": "q17",
+  "category": "การลา",
+  "text": "ข้อใดเป็นตัวอย่างของ “การลาเท็จ”?",
+  "choices": [
+   "แจ้งลาป่วยกับหัวหน้า แต่มาสแกนนิ้วเข้า-ออกงาน",
+   "ลาป่วยพร้อมใบรับรองแพทย์",
+   "ลากิจล่วงหน้าเพื่อไปทำบัตรประชาชน",
+   "ลาพักร้อนตามแผนที่อนุมัติ"
+  ],
+  "answer": 0,
+  "explanation": "การลาเท็จ คือใช้สิทธิลาไปทำอย่างอื่นที่ไม่ตรงวัตถุประสงค์ หรือแจ้งลาแต่มีการบันทึกเวลาเข้า-ออกงานในวันนั้น (เช่นเดียวกับลาป่วยแต่ไปเที่ยว)",
+  "active": true,
+  "type": "mc",
+  "set": "A"
+ },
+ {
+  "id": "q18",
+  "category": "การบันทึกเวลา",
+  "text": "ตามประกาศระเบียบการบันทึกเวลา (5 มี.ค. 2568) พนักงานที่ออกไปปฏิบัติงานนอกสถานที่ ต้องยื่นเอกสารผ่านระบบ HRIS ภายในกี่วัน?",
+  "choices": [
+   "3 วัน",
+   "5 วัน",
+   "7 วัน",
+   "15 วัน"
+  ],
+  "answer": 2,
+  "explanation": "ต้องยื่นเอกสารผ่านระบบ HRIS ภายใน 7 วัน (ประกาศบริษัทฯ ที่ AOTGA/106/2568)",
+  "active": true,
+  "type": "mc",
+  "set": "C"
+ },
+ {
+  "id": "q19",
+  "category": "การบันทึกเวลา",
+  "text": "พนักงานระดับปฏิบัติการ–หัวหน้าส่วน ที่มาสาย ออกก่อน หรือไม่สแกนเข้า-ออกงาน มากกว่ากี่ครั้งใน 1 เดือน จะถูกพิจารณาโทษทางวินัย?",
+  "choices": [
+   "1 ครั้ง",
+   "2 ครั้ง",
+   "3 ครั้ง",
+   "5 ครั้ง"
+  ],
+  "answer": 2,
+  "explanation": "มากกว่า 3 ครั้งใน 1 เดือน จะได้รับการพิจารณาโทษทางวินัย และมีผลต่อการปรับตำแหน่ง/ประเมินผลงานประจำปี",
+  "active": true,
+  "type": "mc",
+  "set": "A"
+ },
+ {
+  "id": "q20",
+  "category": "การบันทึกเวลา",
+  "text": "พนักงานส่งโทรศัพท์มือถือให้เพื่อนไปกดบันทึกเวลาทำงานแทน ผลคือข้อใด?",
+  "choices": [
+   "ตักเตือนด้วยวาจา",
+   "ถือว่ามาสาย",
+   "ถือว่าทุจริตต่อหน้าที่ บริษัทฯ เลิกจ้างได้",
+   "ไม่ผิด ถ้ามาทำงานจริง"
+  ],
+  "answer": 2,
+  "explanation": "การบันทึกเวลาแทนกัน แก้ไข หรือบันทึกไม่ตรงความจริง ถือว่าทุจริตต่อหน้าที่ (ข้อ 1.1) บริษัทฯ เลิกจ้างได้",
+  "active": true,
+  "type": "mc",
+  "set": "B"
+ },
+ {
+  "id": "q21",
+  "category": "พฤติกรรมในที่ทำงาน",
+  "text": "พนักงาน A ยั่วยุจน B ตอบโต้ ทำให้ทะเลาะวิวาททำร้ายร่างกายกันในบริษัทฯ ใครมีความผิด?",
+  "choices": [
+   "A คนเดียว เพราะเป็นผู้เริ่ม",
+   "B คนเดียว เพราะลงมือก่อน",
+   "ทั้ง A และ B ถือว่าร่วมกันทะเลาะวิวาท",
+   "ไม่มีใครผิด ถ้าเคลียร์กันได้"
+  ],
+  "answer": 2,
+  "explanation": "ไม่ว่าเป็นผู้เริ่มหรือฝ่ายถูกยั่วยุ หากเข้าร่วมโดยสมัครใจ ถือว่าร่วมกันทะเลาะวิวาท และถูกพิจารณาโทษทางวินัย",
+  "active": true,
+  "type": "mc",
+  "set": "C"
+ },
+ {
+  "id": "q22",
+  "category": "พฤติกรรมในที่ทำงาน",
+  "text": "พนักงานทะเลาะวิวาทกัน “นอกบริษัทฯ” แต่เกิดขึ้น “ในเวลาทำงาน” มีความผิดอย่างไร?",
+  "choices": [
+   "ไม่ผิด เพราะอยู่นอกบริษัทฯ",
+   "ผิดฐานทะเลาะวิวาท และละทิ้งหน้าที่",
+   "ผิดฐานมาสายเท่านั้น",
+   "ผิดเฉพาะถ้ามีผู้บาดเจ็บ"
+  ],
+  "answer": 1,
+  "explanation": "แม้เกิดนอกบริษัทฯ แต่อยู่ในเวลาทำงาน พนักงานมีความผิดทั้งฐานทะเลาะวิวาทและละทิ้งหน้าที่",
+  "active": true,
+  "type": "mc",
+  "set": "B"
+ },
+ {
+  "id": "q23",
+  "category": "พฤติกรรมในที่ทำงาน",
+  "text": "พนักงานปล่อยเงินกู้ให้เพื่อนร่วมงานโดยคิดดอกเบี้ยร้อยละ 15 ถือเป็นความผิดอย่างไร?",
+  "choices": [
+   "ไม่ผิด เพราะเป็นเรื่องส่วนตัว",
+   "ผิดเฉพาะถ้าคิดดอกเบี้ยเกินกฎหมาย",
+   "เป็นการเงินนอกระบบ ผิดวินัยร้ายแรง บริษัทฯ เลิกจ้างได้",
+   "ผิดเฉพาะผู้กู้"
+  ],
+  "answer": 2,
+  "explanation": "การปล่อยเงินกู้เรียกดอกเบี้ยในบริษัทฯ เข้าลักษณะการเงินนอกระบบ (ข้อ 1.23) เป็นวินัยร้ายแรง หากเอื้อประโยชน์ในงานด้วยถือเป็นการทุจริตต่อหน้าที่",
+  "active": true,
+  "type": "mc",
+  "set": "A"
+ },
+ {
+  "id": "q24",
+  "category": "พฤติกรรมในที่ทำงาน",
+  "text": "มีการตั้งวงแชร์กับพนักงานภายในบริษัทฯ ใครมีความผิดทางวินัย?",
+  "choices": [
+   "เฉพาะผู้ตั้งวงแชร์",
+   "เฉพาะผู้เข้าร่วมเล่นแชร์",
+   "ผิดทั้งผู้ตั้งวงแชร์และผู้เข้าร่วมเล่นแชร์",
+   "ไม่ผิด ถ้าไม่มีใครโกง"
+  ],
+  "answer": 2,
+  "explanation": "การเล่นแชร์และการพนันทุกชนิด (รวมพนันออนไลน์) ในที่ทำงานเป็นวินัยร้ายแรง ผิดทั้งผู้ตั้งวงและผู้เข้าร่วม บริษัทฯ เลิกจ้างได้",
+  "active": true,
+  "type": "mc",
+  "set": "A"
+ },
+ {
+  "id": "q25",
+  "category": "พฤติกรรมในที่ทำงาน",
+  "text": "พนักงานแก้ไขใบรับรองแพทย์ก่อนนำมายื่นบริษัทฯ ถือเป็นความผิดในลักษณะใด?",
+  "choices": [
+   "ผิดเล็กน้อย ตักเตือนด้วยวาจา",
+   "ปลอมแปลงเอกสารเพื่อประโยชน์ตนเอง ถือเป็นการทุจริตต่อหน้าที่",
+   "ไม่ผิด ถ้าป่วยจริง",
+   "ผิดฐานมาสาย"
+  ],
+  "answer": 1,
+  "explanation": "การแก้ไข ปลอมแปลง หรือทำเอกสารเท็จมายื่นบริษัทฯ ถือเป็นการทุจริตต่อหน้าที่ (ข้อ 1.1) และวินัยร้ายแรง",
+  "active": true,
+  "type": "mc",
+  "set": "C"
+ },
+ {
+  "id": "t01",
+  "type": "tf",
+  "category": "การลา",
+  "text": "พนักงานรายวันลากิจได้ปีละ 5 วัน",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 1,
+  "explanation": "ผิด — พนักงานรายวันลากิจได้ปีละ 3 วัน ส่วนพนักงานรายเดือนได้ปีละ 5 วัน",
+  "active": true,
+  "set": ""
+ },
+ {
+  "id": "t02",
+  "type": "tf",
+  "category": "การลา",
+  "text": "ลาป่วยติดต่อกันเกิน 3 วัน ต้องมีใบรับรองแพทย์",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 0,
+  "explanation": "ถูก — ตามระเบียบข้อบังคับฯ ลาป่วยติดต่อกันเกิน 3 วันต้องมีใบรับรองแพทย์",
+  "active": true,
+  "set": "C"
+ },
+ {
+  "id": "t03",
+  "type": "tf",
+  "category": "การลา",
+  "text": "ลาป่วยต่อเนื่องกับลากิจได้ ถ้ายังมีสิทธิลาเหลืออยู่",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 1,
+  "explanation": "ผิด — ระเบียบห้ามลาป่วยและลากิจต่อเนื่องกัน",
+  "active": true,
+  "set": "A"
+ },
+ {
+  "id": "t04",
+  "type": "tf",
+  "category": "การลา",
+  "text": "การลาทุกประเภทต้องยื่นในระบบ Humansoft และได้รับอนุมัติจากหัวหน้างาน",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 0,
+  "explanation": "ถูก — หากลาไม่ลงระบบจะถูกพิจารณามาตรการทางวินัยเรื่องขาดงาน",
+  "active": true,
+  "set": "A"
+ },
+ {
+  "id": "t05",
+  "type": "tf",
+  "category": "การลา",
+  "text": "หัวหน้างานมีสิทธิไม่อนุมัติการลากิจ หากไม่เข้าเงื่อนไขที่บริษัทฯ กำหนด",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 0,
+  "explanation": "ถูก — ลากิจต้องเป็นกิจธุระจำเป็นที่ให้ผู้อื่นทำแทนไม่ได้ ลาล่วงหน้า และชี้แจงเหตุจำเป็น",
+  "active": true,
+  "set": "B"
+ },
+ {
+  "id": "t06",
+  "type": "tf",
+  "category": "พฤติกรรมในที่ทำงาน",
+  "text": "ฝ่ายที่ถูกยั่วยุจนตอบโต้ ไม่มีความผิดฐานทะเลาะวิวาท",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 1,
+  "explanation": "ผิด — ไม่ว่าเป็นผู้เริ่มหรือถูกยั่วยุ หากเข้าร่วมโดยสมัครใจถือว่าร่วมกันทะเลาะวิวาท",
+  "active": true,
+  "set": "C"
+ },
+ {
+  "id": "t07",
+  "type": "tf",
+  "category": "พฤติกรรมในที่ทำงาน",
+  "text": "ทะเลาะวิวาทนอกบริษัทฯ ในเวลางาน มีความผิดทั้งฐานทะเลาะวิวาทและละทิ้งหน้าที่",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 0,
+  "explanation": "ถูก — แม้เกิดนอกบริษัทฯ แต่อยู่ในเวลาทำงาน จึงผิดทั้งสองฐาน",
+  "active": true,
+  "set": "A"
+ },
+ {
+  "id": "t08",
+  "type": "tf",
+  "category": "พฤติกรรมในที่ทำงาน",
+  "text": "การเล่นแชร์ในบริษัทฯ ผิดเฉพาะคนตั้งวงแชร์ ผู้เข้าร่วมไม่ผิด",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 1,
+  "explanation": "ผิด — ผิดทั้งผู้ตั้งวงแชร์และผู้เข้าร่วมเล่นแชร์ เป็นวินัยร้ายแรง",
+  "active": true,
+  "set": "B"
+ },
+ {
+  "id": "t09",
+  "type": "tf",
+  "category": "การบันทึกเวลา",
+  "text": "การบันทึกเวลาเข้า-ออกงานแทนกัน ถือว่าทุจริตต่อหน้าที่ บริษัทฯ เลิกจ้างได้",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 0,
+  "explanation": "ถูก — ตามข้อ 1.1 ทุจริตต่อหน้าที่ และประกาศระเบียบการบันทึกเวลา",
+  "active": true,
+  "set": "C"
+ },
+ {
+  "id": "t10",
+  "type": "tf",
+  "category": "การบันทึกเวลา",
+  "text": "มาทำงานแต่ลืมสแกนนิ้วเข้า-ออกงาน ไม่ถือว่าผิดระเบียบ",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 1,
+  "explanation": "ผิด — การไม่สแกนนิ้ว ไม่ว่าจงใจหรือลืม ถือเป็นการฝ่าฝืนระเบียบเรื่องเวลาทำงาน",
+  "active": true,
+  "set": "B"
+ },
+ {
+  "id": "t11",
+  "type": "tf",
+  "category": "พฤติกรรมในที่ทำงาน",
+  "text": "เล่นการพนันออนไลน์ในที่ทำงานไม่ผิด เพราะใช้โทรศัพท์ส่วนตัว",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 1,
+  "explanation": "ผิด — การพนันทุกชนิดรวมถึงออนไลน์ภายในที่ทำงาน เป็นความผิดวินัยร้ายแรง",
+  "active": true,
+  "set": "B"
+ },
+ {
+  "id": "t12",
+  "type": "tf",
+  "category": "การลา",
+  "text": "แจ้งลาป่วยแต่ไปเที่ยว ถือเป็นการลาเท็จและผิดวินัย",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 0,
+  "explanation": "ถูก — เป็นการใช้สิทธิลาไม่ตรงวัตถุประสงค์และรายงานเท็จ (ข้อ 2.24)",
+  "active": true,
+  "set": "C"
+ },
+ {
+  "id": "t13",
+  "type": "tf",
+  "category": "การลา",
+  "text": "บริษัทฯ อาจพิจารณาเลิกจ้างพนักงานที่ลาป่วยเป็นอาจิณได้ เพราะหย่อนสมรรถภาพ",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 0,
+  "explanation": "ถูก — แม้ป่วยจริงจะลาได้ แต่ลาบ่อยจนหย่อนสมรรถภาพ บริษัทฯ อาจพิจารณาเลิกจ้างได้",
+  "active": true,
+  "set": ""
+ },
+ {
+  "id": "t14",
+  "type": "tf",
+  "category": "การบันทึกเวลา",
+  "text": "การถูกลงโทษทางวินัย ไม่มีผลต่อการประเมินผลงานประจำปี",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 1,
+  "explanation": "ผิด — โทษทางวินัยมีผลต่อการปรับตำแหน่งและการประเมินผลงานประจำปี",
+  "active": true,
+  "set": "B"
+ },
+ {
+  "id": "t15",
+  "type": "tf",
+  "category": "ขาดงาน / ละทิ้งหน้าที่",
+  "text": "แอบหลับในเวลาทำงานเพราะกินยาแก้ป่วย ไม่ถือเป็นความผิด",
+  "choices": [
+   "ถูก",
+   "ผิด"
+  ],
+  "answer": 1,
+  "explanation": "ผิด — ถือเป็นการละทิ้งหน้าที่ หากป่วยต้องแจ้งหัวหน้างานและยื่นลาให้ถูกต้อง",
+  "active": true,
+  "set": "A"
+ },
+ {
+  "id": "n01",
+  "type": "num",
+  "category": "ขาดงาน / ละทิ้งหน้าที่",
+  "text": "ขาดงานติดต่อกันกี่วันโดยไม่มีเหตุสมควร จึงเป็นวินัยร้ายแรง?",
+  "choices": [
+   "3",
+   "วัน"
+  ],
+  "answer": 0,
+  "explanation": "ขาดงานติดต่อกัน 3 วันโดยไม่มีเหตุสมควร อยู่ในรายการวินัยร้ายแรง",
+  "active": true,
+  "set": "C"
+ },
+ {
+  "id": "n02",
+  "type": "num",
+  "category": "การลา",
+  "text": "ลาป่วยโดยได้รับค่าจ้าง ได้ปีละไม่เกินกี่วัน?",
+  "choices": [
+   "30",
+   "วัน"
+  ],
+  "answer": 0,
+  "explanation": "บริษัทฯ จ่ายค่าจ้างวันลาป่วยให้ปีหนึ่งไม่เกิน 30 วัน",
+  "active": true,
+  "set": "B"
+ },
+ {
+  "id": "n03",
+  "type": "num",
+  "category": "การลา",
+  "text": "พนักงานรายเดือนลากิจได้ปีละกี่วัน?",
+  "choices": [
+   "5",
+   "วัน"
+  ],
+  "answer": 0,
+  "explanation": "พนักงานรายเดือน 5 วัน/ปี · พนักงานรายวัน 3 วัน/ปี",
+  "active": true,
+  "set": "A"
+ },
+ {
+  "id": "n04",
+  "type": "num",
+  "category": "การลา",
+  "text": "ลากิจติดต่อกันได้ครั้งละไม่เกินกี่วัน?",
+  "choices": [
+   "2",
+   "วัน"
+  ],
+  "answer": 0,
+  "explanation": "ลากิจติดต่อกันได้ครั้งละไม่เกิน 2 วัน",
+  "active": true,
+  "set": "C"
+ },
+ {
+  "id": "n05",
+  "type": "num",
+  "category": "การบันทึกเวลา",
+  "text": "ปฏิบัติงานนอกสถานที่ ต้องยื่นเอกสารผ่านระบบ HRIS ภายในกี่วัน?",
+  "choices": [
+   "7",
+   "วัน"
+  ],
+  "answer": 0,
+  "explanation": "ต้องยื่นผ่าน HRIS ภายใน 7 วัน (ประกาศ AOTGA/106/2568)",
+  "active": true,
+  "set": "C"
+ },
+ {
+  "id": "n06",
+  "type": "num",
+  "category": "การบันทึกเวลา",
+  "text": "มาสาย / ออกก่อน / ไม่สแกน มากกว่ากี่ครั้งใน 1 เดือน จะถูกพิจารณาโทษทางวินัย?",
+  "choices": [
+   "3",
+   "ครั้ง"
+  ],
+  "answer": 0,
+  "explanation": "มากกว่า 3 ครั้งใน 1 เดือน (ระดับปฏิบัติการ–หัวหน้าส่วน)",
+  "active": true,
+  "set": "A"
+ },
+ {
+  "id": "n07",
+  "type": "num",
+  "category": "วินัยร้ายแรง",
+  "text": "ระเบียบวินัยว่าด้วยเรื่องวินัยร้ายแรง มีตั้งแต่ข้อ 1.1 ถึงข้อ 1.__ ?",
+  "choices": [
+   "25",
+   ""
+  ],
+  "answer": 0,
+  "explanation": "ระเบียบข้อบังคับฯ ฉบับ 4 พ.ย. 2567 เพิ่มเติมวินัยร้ายแรง ข้อ 1.1 – 1.25",
+  "active": true,
+  "set": "B"
+ }
+];
+const DEFAULT_SETTINGS = {
+  title: 'HR Knowledge Quiz',
+  subtitle: 'ระเบียบข้อบังคับในการปฏิบัติงาน — HR Compliance & ER',
+  isOpen: true, questionsPerQuiz: 10, timePerQuestion: 20, passPercent: 70, maxAttempts: 3,
+  shuffleQuestions: true, shuffleChoices: true, showLeaderboard: true, showExplanation: true,
+  useSets: true, shareUrl: '',
+  theme: 'auto', themeEffects: true, themeMap: '1:newyear,2:valentine,3:stpatrick,4:songkran,5:default,6:default,7:default,8:default,9:midautumn,10:halloween,11:loykrathong,12:christmas',
+  modeAttack: true, attackSeconds: 60, modeSurvival: true, survivalLives: 3, modePractice: true,
+};
+const MODE = CONFIG.clientId && CONFIG.excelShareUrl ? 'ms' : 'demo';
+const SCOPES = ['User.Read', 'Files.ReadWrite.All'];
+const LETTERS = 'ABCD';
+
+/* =================================================================
+   UTIL
+================================================================= */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const fmtSec = s => s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}` : `${s}s`;
+const nowStamp = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`; };
+const parseStamp = s => { if (typeof s === 'number') return new Date(Math.round((s - 25569) * 864e5) + new Date().getTimezoneOffset() * 6e4); return new Date(String(s).replace(' ', 'T')); };
+const fmtDate = s => { const d = parseStamp(s); return isNaN(d) ? String(s) : d.toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }); };
+const sortKey = s => { const d = parseStamp(s); return isNaN(d) ? 0 : d.getTime(); };
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3200); }
+// localStorage with in-memory fallback (some previews / in-app viewers block storage)
+const MEM = {};
+const LS_OK = (() => { try { localStorage.setItem('hrq__t', '1'); localStorage.removeItem('hrq__t'); return true; } catch { return false; } })();
+const LS = {
+  get(k, d) { try { const v = LS_OK ? localStorage.getItem('hrq_' + k) : MEM[k]; return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { const s = JSON.stringify(v); MEM[k] = s; if (LS_OK) try { localStorage.setItem('hrq_' + k, s); } catch {} },
+  del(k) { delete MEM[k]; if (LS_OK) try { localStorage.removeItem('hrq_' + k); } catch {} },
+};
+function dialog({ text, input = false, ok = 'ตกลง', cancel = 'ยกเลิก', danger = false }) {
+  return new Promise(res => {
+    const back = document.createElement('div'); back.className = 'dialog-back';
+    back.innerHTML = `<div class="dialog"><p></p>${input ? '<input>' : ''}<div class="row">${cancel ? `<button class="btn btn-light btn-sm" data-r="0">${cancel}</button>` : ''}<button class="btn ${danger ? 'btn-danger' : 'btn-primary'} btn-sm" data-r="1">${ok}</button></div></div>`;
+    back.querySelector('p').textContent = text;
+    back.addEventListener('click', e => { const r = e.target.dataset.r; if (r === undefined) return; back.remove(); res(r === '1' ? (input ? back.querySelector('input').value : true) : (input ? null : false)); });
+    document.body.appendChild(back);
+    back.querySelector('input')?.focus();
+  });
+}
+function mount(tplId) { const app = $('#app'); app.innerHTML = ''; app.appendChild($(tplId).content.cloneNode(true)); bindSettings(); applyTheme(); }
+
+/* =================================================================
+   SEASONAL THEMES
+================================================================= */
+const THEMES = {
+  default:     { name: 'ปกติ', icon: '', greet: '', fx: [] },
+  newyear:     { name: 'ปีใหม่ (New Year)', icon: '🎆', greet: '🎉 Happy New Year — สวัสดีปีใหม่!', fx: ['✨', '🎉', '⭐', '🎊'], motion: 'fall',
+                 brand: '#b45309', brand2: '#1d4ed8', bg: '#f6f4ee', hero: 'linear-gradient(140deg,#0b1026,#1e3a8a 55%,#b45309)', login: 'radial-gradient(120% 80% at 10% 0%,#b45309 0%,#1e3a8a 45%,#070b1d 100%)', confetti: ['#fbbf24', '#fde68a', '#ffffff', '#60a5fa', '#f59e0b'] },
+  valentine:   { name: 'วาเลนไทน์ (Valentine)', icon: '💘', greet: '💗 Happy Valentine’s Day — เรียนรู้ด้วยใจ', fx: ['💗', '💕', '🌹', '💖'], motion: 'rise',
+                 brand: '#db2777', brand2: '#f43f5e', bg: '#fdf2f6', hero: 'linear-gradient(140deg,#be185d,#ec4899 60%,#fb7185)', login: 'radial-gradient(120% 80% at 10% 0%,#fb7185 0%,#be185d 45%,#4c0519 100%)', confetti: ['#ec4899', '#f43f5e', '#fda4af', '#ffffff', '#be185d'] },
+  stpatrick:   { name: 'เซนต์แพทริก (St. Patrick’s)', icon: '☘️', greet: '🍀 Happy St. Patrick’s Day — ขอให้โชคดี!', fx: ['☘️', '🍀', '✨'], motion: 'fall',
+                 brand: '#15803d', brand2: '#65a30d', bg: '#f1f8f2', hero: 'linear-gradient(140deg,#14532d,#16a34a 60%,#84cc16)', login: 'radial-gradient(120% 80% at 10% 0%,#65a30d 0%,#15803d 45%,#052e16 100%)', confetti: ['#16a34a', '#84cc16', '#facc15', '#ffffff'] },
+  songkran:    { name: 'สงกรานต์ (Songkran)', icon: '💦', greet: '💧 สุขสันต์วันสงกรานต์ — Happy Thai New Year!', fx: ['💧', '💦', '🌸', '🌼'], motion: 'fall',
+                 brand: '#0284c7', brand2: '#06b6d4', bg: '#eff9fc', hero: 'linear-gradient(140deg,#075985,#0ea5e9 55%,#f472b6)', login: 'radial-gradient(120% 80% at 10% 0%,#22d3ee 0%,#0369a1 45%,#082f49 100%)', confetti: ['#38bdf8', '#22d3ee', '#f9a8d4', '#fde047', '#ffffff'] },
+  easter:      { name: 'อีสเตอร์ (Easter)', icon: '🐣', greet: '🌷 Happy Easter — ฤดูใบไม้ผลิแห่งการเรียนรู้', fx: ['🥚', '🌷', '🐣', '🌼'], motion: 'fall',
+                 brand: '#8b5cf6', brand2: '#f472b6', bg: '#faf7ff', hero: 'linear-gradient(140deg,#8b5cf6,#c084fc 50%,#f9a8d4)', login: 'radial-gradient(120% 80% at 10% 0%,#f9a8d4 0%,#8b5cf6 45%,#3b0764 100%)', confetti: ['#c4b5fd', '#f9a8d4', '#fde68a', '#a7f3d0', '#ffffff'] },
+  midautumn:   { name: 'ไหว้พระจันทร์ (Mid-Autumn)', icon: '🏮', greet: '🌕 Happy Mid-Autumn Festival — ไหว้พระจันทร์', fx: ['🏮', '🥮', '✨'], motion: 'rise',
+                 brand: '#b91c1c', brand2: '#d97706', bg: '#fbf6ef', hero: 'linear-gradient(140deg,#450a0a,#b91c1c 55%,#d97706)', login: 'radial-gradient(120% 80% at 80% 10%,#fde68a 0%,#b91c1c 30%,#1c0606 100%)', confetti: ['#dc2626', '#f59e0b', '#fde68a', '#ffffff'] },
+  halloween:   { name: 'ฮาโลวีน (Halloween)', icon: '🎃', greet: '👻 Happy Halloween — อย่าให้ข้อสอบหลอกคุณ!', fx: ['🦇', '🎃', '👻', '🕸️'], motion: 'drift',
+                 brand: '#ea580c', brand2: '#7c3aed', bg: '#f7f3fb', hero: 'linear-gradient(140deg,#1e0b36,#5b21b6 55%,#ea580c)', login: 'radial-gradient(120% 80% at 10% 0%,#ea580c 0%,#4c1d95 40%,#0c0618 100%)', confetti: ['#f97316', '#a855f7', '#22c55e', '#facc15', '#111827'] },
+  loykrathong: { name: 'ลอยกระทง (Loy Krathong)', icon: '🪷', greet: '🏮 สุขสันต์วันลอยกระทง — Loy Krathong Festival', fx: ['🏮', '✨', '🪷', '⭐'], motion: 'rise',
+                 brand: '#b45309', brand2: '#1e40af', bg: '#f4f5fb', hero: 'linear-gradient(140deg,#0c1445,#1e3a8a 55%,#d97706)', login: 'radial-gradient(120% 80% at 80% 0%,#f59e0b 0%,#1e3a8a 35%,#050a24 100%)', confetti: ['#fbbf24', '#fb923c', '#fde68a', '#93c5fd', '#ffffff'] },
+  christmas:   { name: 'คริสต์มาส (Christmas)', icon: '🎄', greet: '🎅 Merry Christmas — สุขสันต์วันคริสต์มาส!', fx: ['❄️', '❅', '❆', '✨'], motion: 'fall',
+                 brand: '#b91c1c', brand2: '#15803d', bg: '#f6f8f4', hero: 'linear-gradient(140deg,#7f1d1d,#b91c1c 50%,#166534)', login: 'radial-gradient(120% 80% at 10% 0%,#166534 0%,#7f1d1d 45%,#1a0505 100%)', confetti: ['#dc2626', '#16a34a', '#facc15', '#ffffff'] },
+};
+const MONTHS_TH = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+const parseThemeMap = str => { const m = {}; String(str || DEFAULT_SETTINGS.themeMap).split(',').forEach(p => { const [k, v] = p.split(':').map(x => x.trim()); if (k && THEMES[v]) m[Number(k)] = v; }); return m; };
+let THEME_PREVIEW = null, THEME_KEY = null;
+function currentThemeKey(s = SETTINGS) {
+  if (THEME_PREVIEW) return THEME_PREVIEW;
+  if (s.theme === 'off') return 'default';
+  if (s.theme && s.theme !== 'auto' && THEMES[s.theme]) return s.theme;
+  return parseThemeMap(s.themeMap)[new Date().getMonth() + 1] || 'default';
+}
+function applyTheme() {
+  const key = currentThemeKey(), t = THEMES[key], root = document.documentElement.style;
+  const vars = { '--brand': t.brand, '--brand-2': t.brand2, '--bg': t.bg, '--hero': t.hero, '--login-bg': t.login };
+  for (const [k, v] of Object.entries(vars)) v ? root.setProperty(k, v) : root.removeProperty(k);
+  document.body.dataset.theme = key;
+  $$('[data-theme-icon]').forEach(el => { el.textContent = t.icon; });
+  $$('[data-theme-greet]').forEach(el => { el.textContent = t.greet; el.classList.toggle('hidden', !t.greet); });
+  const meta = document.querySelector('meta[name=theme-color]'); if (meta) meta.content = t.brand || '#312e81';
+  LS.set('themeCache', { theme: SETTINGS.theme, themeMap: SETTINGS.themeMap, themeEffects: SETTINGS.themeEffects });
+  if (THEME_KEY !== key + SETTINGS.themeEffects) { THEME_KEY = key + SETTINGS.themeEffects; renderFx(t); }
+}
+function renderFx(t) {
+  const box = $('#fx'); box.innerHTML = '';
+  if (!SETTINGS.themeEffects || !t.fx.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const n = innerWidth < 600 ? 14 : 22;
+  for (let i = 0; i < n; i++) {
+    const el = document.createElement('span');
+    el.className = 'fx fx-' + t.motion;
+    el.textContent = t.fx[i % t.fx.length];
+    const dur = 9 + Math.random() * 9;
+    el.style.cssText = (t.motion === 'drift' ? `left:0;top:${Math.random() * 70}%;` : `left:${Math.random() * 100}%;`) + `font-size:${14 + Math.random() * 14}px;animation-duration:${dur}s;animation-delay:${-Math.random() * dur}s;opacity:${.45 + Math.random() * .45}`;
+    box.appendChild(el);
+  }
+}
+window.addEventListener('resize', () => { THEME_KEY = null; applyTheme(); });
+function bindSettings() { $$('[data-bind]').forEach(el => { el.textContent = SETTINGS[el.dataset.bind] ?? ''; }); document.title = SETTINGS.title; }
+function setLoading(msg) { document.body.classList.remove('playing'); $('#app').innerHTML = `<div class="loading"><div style="text-align:center"><div class="spinner"></div>${esc(msg)}</div></div>`; }
+
+function normSettings(o) {
+  const s = { ...DEFAULT_SETTINGS };
+  for (const k of Object.keys(DEFAULT_SETTINGS)) {
+    if (!(k in o)) continue;
+    const def = DEFAULT_SETTINGS[k], v = o[k];
+    if (typeof def === 'boolean') s[k] = v === true || String(v).toUpperCase() === 'TRUE' || v === 1 || v === '1';
+    else if (typeof def === 'number') { const n = Number(v); if (Number.isFinite(n) && n >= 0) s[k] = Math.round(n); }
+    else s[k] = String(v);
+  }
+  return s;
+}
+
+/* =================================================================
+   STORAGE — Demo (localStorage)
+================================================================= */
+const DemoStore = {
+  label: 'โหมดทดลอง (เก็บในเบราว์เซอร์นี้)',
+  async init() {},
+  async getSettings() { return normSettings(LS.get('settings', {})); },
+  async saveSettings(s) { LS.set('settings', s); },
+  async getQuestions() { return LS.get('questions', null) || DEFAULT_QUESTIONS; },
+  async saveQuestions(q) { LS.set('questions', q); },
+  async getAttempts() { return LS.get('attempts', []); },
+  async getAnswers() { return LS.get('answers', []); },
+  async addAttempt(a, rows) { LS.set('attempts', [...LS.get('attempts', []), a]); LS.set('answers', [...LS.get('answers', []), ...rows]); },
+  async deleteAttempt(id) { LS.set('attempts', LS.get('attempts', []).filter(a => a.attemptId !== id)); LS.set('answers', LS.get('answers', []).filter(a => a.attemptId !== id)); },
+  async clearAll() { LS.set('attempts', []); LS.set('answers', []); },
+};
+
+/* =================================================================
+   STORAGE — Microsoft Graph → Excel on SharePoint / OneDrive
+================================================================= */
+const COLS = {
+  Scores: { sheet: 'Scores', table: 'tblScores', keys: ['attemptId', 'timestamp', 'name', 'email', 'points', 'correct', 'total', 'percent', 'result', 'durationSec', 'attemptNo', 'bestStreak', 'mode', 'set'],
+    head: ['Attempt ID', 'วันที่-เวลา', 'ชื่อ-นามสกุล', 'อีเมล', 'คะแนน', 'ตอบถูก', 'จำนวนข้อ', 'ร้อยละ', 'ผล', 'เวลาที่ใช้ (วินาที)', 'ครั้งที่', 'Streak สูงสุด', 'โหมด', 'ชุดข้อสอบ'] },
+  Answers: { sheet: 'Answers', table: 'tblAnswers', keys: ['attemptId', 'timestamp', 'email', 'name', 'questionNo', 'questionId', 'category', 'question', 'chosen', 'correctAnswer', 'isCorrect', 'timeSec', 'points'],
+    head: ['Attempt ID', 'วันที่-เวลา', 'อีเมล', 'ชื่อ-นามสกุล', 'ข้อที่', 'Question ID', 'หมวด', 'คำถาม', 'คำตอบที่เลือก', 'คำตอบที่ถูก', 'ถูก/ผิด', 'เวลาตอบ (วินาที)', 'คะแนนข้อนี้'] },
+  Questions: { sheet: 'Questions', table: 'tblQuestions', keys: ['id', 'category', 'text', 'A', 'B', 'C', 'D', 'answer', 'explanation', 'active', 'type', 'set'],
+    head: ['ID', 'หมวด', 'คำถาม', 'ตัวเลือก A', 'ตัวเลือก B', 'ตัวเลือก C', 'ตัวเลือก D', 'คำตอบที่ถูก (A-D)', 'คำอธิบาย', 'ใช้งาน (Y/N)', 'ประเภท (mc/tf/num)', 'ชุดข้อสอบ (A/B/C)'] },
+  Settings: { sheet: 'Settings', table: 'tblSettings', keys: ['key', 'value'], head: ['Key', 'Value'] },
+};
+const NUMERIC = new Set(['points', 'correct', 'total', 'percent', 'durationSec', 'attemptNo', 'bestStreak', 'questionNo', 'timeSec']);
+const colLetter = n => { let s = ''; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+const SETS = ['A', 'B', 'C'];
+const normSet = v => { const x = String(v ?? '').trim().toUpperCase().replace(/^ชุด\s*/, ''); return SETS.includes(x) ? x : ''; };
+const qToRow = q => { const c = [...q.choices, '', '', '', ''].slice(0, 4); return [q.id, q.category || '', q.text, ...c, LETTERS[q.answer], q.explanation || '', q.active === false ? 'N' : 'Y', q.type || 'mc', q.set || '']; };
+function rowToQ(o) {
+  const type = ['mc', 'tf', 'num'].includes(String(o.type || '').trim().toLowerCase()) ? String(o.type).trim().toLowerCase() : 'mc';
+  const base = { id: String(o.id || 'q' + Math.random().toString(36).slice(2, 9)), type, category: String(o.category || ''), text: String(o.text || '').trim(), explanation: String(o.explanation || ''), active: String(o.active || 'Y').toUpperCase() !== 'N', set: normSet(o.set) };
+  if (!base.text) return null;
+  if (type === 'num') { const v = Number(String(o.A ?? '').trim()); if (String(o.A ?? '').trim() === '' || !Number.isFinite(v)) return null; return { ...base, choices: [String(v), String(o.B ?? '').trim()], answer: 0 }; }
+  if (type === 'tf') { const L = String(o.answer || '').trim().toUpperCase(); const a = L === 'A' || L === 'ถูก' || L === 'TRUE' ? 0 : L === 'B' || L === 'ผิด' || L === 'FALSE' ? 1 : -1; if (a < 0) return null; return { ...base, choices: ['ถูก', 'ผิด'], answer: a }; }
+  const raw = ['A', 'B', 'C', 'D'].map(k => String(o[k] ?? '').trim());
+  const ansIdx = LETTERS.indexOf(String(o.answer || '').trim().toUpperCase());
+  const kept = raw.map((c, i) => ({ c, i })).filter(x => x.c);
+  const answer = kept.findIndex(x => x.i === ansIdx);
+  if (!String(o.text || '').trim() || kept.length < 2 || answer < 0) return null;
+  return { ...base, choices: kept.map(x => x.c), answer };
+}
+
+let pca = null;
+const GraphStore = {
+  label: 'Microsoft 365 → Excel บน SharePoint/OneDrive',
+  base: null, webUrl: null, fileName: null,
+  async token() {
+    const account = pca.getActiveAccount();
+    try { return (await pca.acquireTokenSilent({ scopes: SCOPES, account })).accessToken; }
+    catch (e) { await pca.acquireTokenRedirect({ scopes: SCOPES, account }); throw e; }
+  },
+  async call(method, path, body, attempt = 0) {
+    const url = path.startsWith('https://') ? path : this.base + path;
+    const r = await fetch(url, { method, headers: { Authorization: 'Bearer ' + await this.token(), 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+    if ((r.status === 429 || r.status === 409 || r.status >= 500) && attempt < 4) { await sleep(800 * (attempt + 1)); return this.call(method, path, body, attempt + 1); }
+    if (r.status === 204) return null;
+    const d = await r.json().catch(() => null);
+    if (!r.ok) { const e = new Error(d?.error?.message || 'Microsoft Graph error ' + r.status); e.status = r.status; throw e; }
+    return d;
+  },
+  async init() {
+    const b64 = btoa(unescape(encodeURIComponent(CONFIG.excelShareUrl.trim()))).replace(/=+$/, '').replace(/\//g, '_').replace(/\+/g, '-');
+    const item = await this.call('GET', 'https://graph.microsoft.com/v1.0/shares/u!' + b64 + '/driveItem');
+    this.base = `https://graph.microsoft.com/v1.0/drives/${item.parentReference.driveId}/items/${item.id}/workbook`;
+    this.webUrl = item.webUrl; this.fileName = item.name;
+    const have = new Set((await this.call('GET', '/tables?$select=name')).value.map(t => t.name));
+    const missing = Object.keys(COLS).filter(k => !have.has(COLS[k].table));
+    for (const k of Object.keys(COLS).filter(k => have.has(COLS[k].table))) { // add columns introduced by newer versions
+      const n = (await this.call('GET', `/tables/${COLS[k].table}/columns?$select=name`)).value.length;
+      for (let i = n; i < COLS[k].head.length; i++) await this.call('POST', `/tables/${COLS[k].table}/columns/add`, { name: COLS[k].head[i] });
+    }
+    if (!missing.length) return;
+    if (!ME.isAdmin) throw new Error('ไฟล์ Excel ยังไม่ได้ตั้งค่า — ให้ผู้ดูแลระบบเข้าสู่ระบบก่อน 1 ครั้งเพื่อสร้างชีตอัตโนมัติ');
+    for (const k of ['Scores', 'Answers', 'Questions', 'Settings'].filter(k => missing.includes(k))) {
+      const seed = k === 'Questions' ? DEFAULT_QUESTIONS.map(qToRow) : k === 'Settings' ? Object.entries(DEFAULT_SETTINGS).map(([a, b]) => [a, String(b)]) : [];
+      await this.createTable(k, seed);
+    }
+  },
+  async createTable(k, rows = []) {
+    const t = COLS[k], end = colLetter(t.head.length), sh = encodeURIComponent(t.sheet);
+    const sheets = (await this.call('GET', '/worksheets?$select=name')).value.map(w => w.name);
+    if (!sheets.includes(t.sheet)) await this.call('POST', '/worksheets/add', { name: t.sheet });
+    await this.call('PATCH', `/worksheets/${sh}/range(address='A1:${end}1')`, { values: [t.head] });
+    const tb = await this.call('POST', `/worksheets/${sh}/tables/add`, { address: `${t.sheet}!A1:${end}1`, hasHeaders: true });
+    await this.call('PATCH', `/tables/${encodeURIComponent(tb.id)}`, { name: t.table, style: 'TableStyleMedium2' });
+    if (rows.length) {
+      await this.call('POST', `/tables/${t.table}/rows/add`, { values: rows });
+      const first = await this.call('GET', `/tables/${t.table}/rows/itemAt(index=0)`).catch(() => null);
+      if (first && !first.values[0].some(x => x !== '' && x !== null)) await this.call('DELETE', `/tables/${t.table}/rows/itemAt(index=0)`).catch(() => {}); // remove blank first row
+    }
+  },
+  async rows(k) {
+    const t = COLS[k]; const out = [];
+    let url = `/tables/${t.table}/rows`;
+    while (url) {
+      const d = await this.call('GET', url);
+      for (const r of d.value) {
+        const v = r.values[0];
+        if (!v.some(x => x !== '' && x !== null)) continue;
+        const o = { _index: r.index }; t.keys.forEach((key, i) => { o[key] = NUMERIC.has(key) ? Number(v[i]) || 0 : (v[i] ?? ''); });
+        if ('email' in o) o.email = String(o.email).toLowerCase();
+        if ('attemptId' in o) o.attemptId = String(o.attemptId);
+        out.push(o);
+      }
+      url = d['@odata.nextLink'] || null;
+    }
+    return out;
+  },
+  async append(k, objs) { if (objs.length) await this.call('POST', `/tables/${COLS[k].table}/rows/add`, { values: objs.map(o => COLS[k].keys.map(key => o[key] ?? '')) }); },
+  async replaceAll(k, rows) {
+    await this.call('DELETE', `/worksheets/${encodeURIComponent(COLS[k].sheet)}`).catch(() => {});
+    await this.createTable(k, rows);
+  },
+  async deleteRows(k, indexes) {
+    const all = await this.call('GET', `/tables/${COLS[k].table}/rows?$select=index`);
+    let total = all.value.length;
+    for (const i of [...indexes].sort((a, b) => b - a)) {
+      if (total <= 1) await this.call('PATCH', `/tables/${COLS[k].table}/rows/itemAt(index=${i})/range`, { values: [COLS[k].keys.map(() => '')] });
+      else { await this.call('DELETE', `/tables/${COLS[k].table}/rows/itemAt(index=${i})`); total--; }
+    }
+  },
+  async getSettings() { const o = {}; (await this.rows('Settings')).forEach(r => { o[r.key] = r.value; }); return normSettings(o); },
+  async saveSettings(s) { await this.replaceAll('Settings', Object.entries(s).map(([a, b]) => [a, String(b)])); },
+  async getQuestions() { const q = (await this.rows('Questions')).map(rowToQ).filter(Boolean); return q.length ? q : DEFAULT_QUESTIONS; },
+  async saveQuestions(q) { await this.replaceAll('Questions', q.map(qToRow)); },
+  async getAttempts() { return this.rows('Scores'); },
+  async getAnswers() { return this.rows('Answers'); },
+  async addAttempt(a, rows) { await this.append('Scores', [a]); await this.append('Answers', rows); },
+  async deleteAttempt(id) {
+    const s = (await this.rows('Scores')).filter(r => r.attemptId === id).map(r => r._index);
+    await this.deleteRows('Scores', s);
+    const a = (await this.rows('Answers')).filter(r => r.attemptId === id).map(r => r._index);
+    await this.deleteRows('Answers', a);
+  },
+  async clearAll() { await this.replaceAll('Scores', []); await this.replaceAll('Answers', []); },
+};
+
+/* =================================================================
+   APP STATE
+================================================================= */
+const STORE = MODE === 'ms' ? GraphStore : DemoStore;
+let ME = null, SETTINGS = { ...DEFAULT_SETTINGS }, QUESTIONS = [], ATTEMPTS = [], ANSWERS = [];
+
+async function reloadData(withAnswers = false) {
+  [SETTINGS, QUESTIONS, ATTEMPTS] = await Promise.all([STORE.getSettings(), STORE.getQuestions(), STORE.getAttempts()]);
+  if (withAnswers) ANSWERS = await STORE.getAnswers();
+}
+
+async function boot() {
+  if (MODE === 'ms') {
+    if (location.protocol === 'file:') return showLogin('เปิดไฟล์จากเครื่องโดยตรง (file://) ใช้ Microsoft login ไม่ได้ — ต้องนำไฟล์ขึ้นเว็บ https:// (หรือ http://localhost) และใส่ลิงก์นั้นเป็น Redirect URI ใน Azure');
+    if (!window.msal) return showLogin('โหลดไลบรารี Microsoft ไม่สำเร็จ — ตรวจสอบอินเทอร์เน็ต หรือเครือข่ายบริษัทอาจบล็อก alcdn.msauth.net');
+    pca = new msal.PublicClientApplication({
+      auth: { clientId: CONFIG.clientId, authority: `https://login.microsoftonline.com/${CONFIG.tenantId || 'organizations'}`, redirectUri: location.origin + location.pathname },
+      cache: { cacheLocation: 'localStorage' },
+    });
+    let res = null;
+    try { res = await pca.handleRedirectPromise(); } catch (e) { return showLogin(explainMsalError(e)); }
+    const acc = res?.account || pca.getActiveAccount() || pca.getAllAccounts()[0];
+    if (acc) { pca.setActiveAccount(acc); ME = { name: acc.name || acc.username, email: acc.username.toLowerCase() }; }
+  } else ME = LS.get('demoUser', null);
+
+  if (!ME) return showLogin();
+  if (CONFIG.allowedDomains.length && !CONFIG.allowedDomains.map(d => d.toLowerCase()).includes(ME.email.split('@')[1])) {
+    return showLogin('บัญชีนี้ไม่ได้รับอนุญาต กรุณาใช้อีเมลขององค์กร', true);
+  }
+  ME.isAdmin = MODE === 'demo' ? true : CONFIG.adminEmails.map(e => e.toLowerCase()).includes(ME.email);
+
+  setLoading('กำลังเชื่อมต่อข้อมูล…');
+  try { await STORE.init(); await reloadData(); }
+  catch (e) { console.error(e); setLoading(''); $('#app .loading div').innerHTML = `<div style="max-width:340px;text-align:center;padding:20px"><div style="font-size:2.4rem">⚠️</div><p style="margin:10px 0 16px">${esc(e.message)}</p><button class="btn btn-light" onclick="logout()">ออกจากระบบ</button></div>`; return; }
+  flushPending();
+  route();
+}
+function explainMsalError(e) {
+  const m = String(e.errorMessage || e.message || e);
+  if (/AADSTS50011/.test(m)) return 'Redirect URI ไม่ตรง — ใน Azure ให้เพิ่ม "' + location.origin + location.pathname + '" ใต้ Single-page application';
+  if (/AADSTS9002326|AADSTS700054|Cross-origin token redemption/.test(m)) return 'แอปใน Azure ต้องเป็นประเภท "Single-page application" (ไม่ใช่ Web)';
+  if (/AADSTS65001|consent/i.test(m)) return 'ยังไม่ได้รับอนุญาตสิทธิ์ — ให้ IT กด "Grant admin consent" ใน API permissions';
+  if (/AADSTS50020|AADSTS90072/.test(m)) return 'บัญชีนี้ไม่อยู่ในองค์กร (tenant) ที่กำหนด';
+  if (/AADSTS700016/.test(m)) return 'ไม่พบ clientId นี้ใน tenant — ตรวจ clientId / tenantId ใน CONFIG';
+  return 'เข้าสู่ระบบไม่สำเร็จ: ' + m;
+}
+window.addEventListener('hashchange', () => { if (ME) route(); });
+function route() { if (location.hash === '#admin' && ME.isAdmin) showAdmin(); else showQuiz(); }
+
+async function logout() {
+  if (MODE === 'ms' && pca) { await pca.logoutRedirect({ account: pca.getActiveAccount(), postLogoutRedirectUri: location.origin + location.pathname }); }
+  else { LS.del('demoUser'); location.hash = ''; location.reload(); }
+}
+window.logout = logout;
+
+/* =================================================================
+   1. LOGIN
+================================================================= */
+async function showLogin(err, forceLogout = false) {
+  if (MODE === 'demo') SETTINGS = await DemoStore.getSettings();
+  else SETTINGS = normSettings({ ...SETTINGS, ...LS.get('themeCache', {}) });
+  document.body.classList.remove('playing');
+  mount('#tpl-login');
+  $('#chips').innerHTML = [`📝 ${SETTINGS.questionsPerQuiz} ข้อ`, `⏱️ ${SETTINGS.timePerQuestion} วิ/ข้อ`, `🏆 ผ่าน ${SETTINGS.passPercent}%`].map(c => `<span>${c}</span>`).join('');
+  if (err) { $('#loginErr').textContent = err; $('#loginErr').classList.remove('hidden'); }
+  if (MODE === 'demo') {
+    $('#demoForm').classList.remove('hidden'); $('#msBtn').style.opacity = .45;
+    if (!LS_OK) $('#demoForm .tag').textContent = 'โหมดทดลอง — เบราว์เซอร์นี้บล็อกการเก็บข้อมูล ข้อมูลจะหายเมื่อปิดหน้า (เปิดด้วย Chrome/Edge เพื่อเก็บถาวร)';
+  }
+  $('#msBtn').onclick = async () => {
+    const showErr = m => { $('#loginErr').textContent = m; $('#loginErr').classList.remove('hidden'); };
+    if (MODE === 'demo') return showErr('ยังไม่ได้ตั้งค่า Microsoft — ตอนนี้ใช้ฟอร์ม "โหมดทดลอง" ด้านล่างได้เลย หรือใส่ clientId, tenantId และ excelShareUrl ใน CONFIG');
+    if (!pca) return; // file:// or library failed — message already shown
+    if (forceLogout) return logout();
+    try { await pca.loginRedirect({ scopes: SCOPES, prompt: 'select_account' }); }
+    catch (e) { showErr('เปิดหน้า Microsoft login ไม่สำเร็จ: ' + (e.errorMessage || e.message)); }
+  };
+  $('#demoForm').onsubmit = e => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(e.target));
+    LS.set('demoUser', { name: f.name.trim(), email: f.email.trim().toLowerCase() });
+    boot();
+  };
+}
+
+/* =================================================================
+   2. QUIZ — modes: classic · attack · survival · practice
+            types: mc (choice) · tf (true/false) · num (number keypad)
+================================================================= */
+const C_TIMER = 2 * Math.PI * 27, C_RING = 2 * Math.PI * 64;
+const MODES = {
+  classic:  { icon: '🎯', name: 'Classic', flag: null, desc: s => setsReady() ? `สุ่ม 1 ใน ${availSets().length} ชุดข้อสอบ · ${s.timePerQuestion} วิ/ข้อ · วัดผลผ่าน/ไม่ผ่าน` : `${Math.min(s.questionsPerQuiz, activeQs().length)} ข้อ · ${s.timePerQuestion} วิ/ข้อ · วัดผลผ่าน/ไม่ผ่าน` },
+  attack:   { icon: '⚡', name: 'Time Attack', flag: 'modeAttack', desc: s => `${s.attackSeconds} วินาที ตอบให้ได้มากที่สุด` },
+  survival: { icon: '❤️', name: 'Survival', flag: 'modeSurvival', desc: s => `${s.survivalLives} ชีวิต ตอบผิดเสียชีวิต อยู่รอดให้นานที่สุด` },
+  practice: { icon: '📖', name: 'Practice', flag: 'modePractice', desc: () => 'ฝึกทบทวนรายหมวด ไม่จับเวลา ไม่บันทึกคะแนน' },
+};
+const TYPE_LABEL = { mc: 'เลือกตอบ', tf: 'ถูกหรือผิด?', num: 'เติมตัวเลข' };
+const qType = q => q.type || 'mc';
+const attemptMode = a => a.mode || 'classic';
+const modeOn = m => !MODES[m].flag || !!SETTINGS[MODES[m].flag];
+let GAME = null, RAF = null, LB_MODE = 'classic', PRACTICE_CAT = '', LAST_MODE = 'classic';
+const myAttempts = (mode = 'classic') => ATTEMPTS.filter(a => a.email === ME.email && attemptMode(a) === mode);
+const activeQs = () => QUESTIONS.filter(q => q.active !== false);
+function leaderboard(mode = 'classic', limit = 10) {
+  const best = new Map();
+  for (const a of ATTEMPTS) { if (attemptMode(a) !== mode) continue; const b = best.get(a.email); if (!b || a.points > b.points || (a.points === b.points && a.durationSec < b.durationSec)) best.set(a.email, a); }
+  return [...best.values()].sort((x, y) => y.points - x.points || x.durationSec - y.durationSec).slice(0, limit);
+}
+function attemptsLeft() { return SETTINGS.maxAttempts > 0 ? Math.max(0, SETTINGS.maxAttempts - myAttempts('classic').length) : null; }
+const availSets = () => SETS.filter(k => QUESTIONS.some(q => q.active !== false && q.set === k));
+const setsReady = () => SETTINGS.useSets && availSets().length > 0;
+function pickSet() {
+  // each player gets a random set; retakes get a set they have not done yet (cycles after all sets are used)
+  const avail = availSets(), mine = myAttempts('classic').sort((a, b) => sortKey(a.timestamp) - sortKey(b.timestamp)).map(a => a.set).filter(Boolean);
+  let cand = avail.filter(k => !mine.includes(k));
+  if (!cand.length) { const last = mine[mine.length - 1]; cand = avail.length > 1 ? avail.filter(k => k !== last) : avail; }
+  return cand[Math.floor(Math.random() * cand.length)];
+}
+const bestOf = mode => myAttempts(mode).reduce((m, a) => Math.max(m, a.points), 0);
+
+function showQuiz() {
+  mount('#tpl-quiz');
+  $('#userName').textContent = ME.name;
+  $('#avatar').textContent = (ME.name || '?').trim().charAt(0).toUpperCase();
+  if (ME.isAdmin) { $('#toAdmin').classList.remove('hidden'); $('#toAdmin').onclick = () => { location.hash = 'admin'; }; }
+  $('#logout').onclick = logout;
+  $('#timerBar').style.strokeDasharray = C_TIMER;
+  $('#rRing').style.strokeDasharray = C_RING; $('#rRing').style.strokeDashoffset = C_RING;
+  $('#againBtn').onclick = () => startGame(LAST_MODE);
+  $('#homeBtn').onclick = renderHome;
+  $('#quitBtn').onclick = quitGame;
+  $('#modes').onclick = e => { if (e.target.closest('select')) return; const c = e.target.closest('[data-mode]'); if (c && !c.disabled) startGame(c.dataset.mode); };
+  $('#lbTabs').onclick = e => { const b = e.target.closest('[data-lb]'); if (b) { LB_MODE = b.dataset.lb; renderLeaderboard(); } };
+  document.onkeydown = onKey;
+  renderHome();
+}
+function showSection(id) { ['home', 'play', 'result'].forEach(s => $('#' + s).classList.toggle('hidden', s !== id)); document.body.classList.toggle('playing', id === 'play'); window.scrollTo(0, 0); }
+
+function renderHome() {
+  stopTimer(); GAME = null;
+  $('#feedback').classList.add('hidden');
+  const left = attemptsLeft(), closed = !SETTINGS.isOpen && !ME.isAdmin;
+  const lbC = leaderboard('classic'), rank = lbC.findIndex(x => x.email === ME.email) + 1;
+  $('#sBest').textContent = bestOf('classic');
+  $('#sRank').textContent = SETTINGS.showLeaderboard && rank ? '#' + rank : '–';
+  $('#sLeft').textContent = left === null ? '∞' : left;
+  const cats = [...new Set(activeQs().map(q => q.category).filter(Boolean))];
+  $('#modes').innerHTML = Object.entries(MODES).filter(([m]) => modeOn(m)).map(([m, d]) => {
+    let badge = '', disabled = closed;
+    if (m === 'classic') { badge = left === null ? 'นับผลสอบ' : `เหลือ ${left} สิทธิ์`; if (left === 0 && !ME.isAdmin) { disabled = true; badge = 'ใช้สิทธิ์ครบ'; } }
+    else if (m !== 'practice') { const b = bestOf(m); badge = b ? `สถิติ ${b}` : 'ยังไม่เคยเล่น'; }
+    else badge = 'ไม่บันทึกผล';
+    const extra = m === 'practice' ? `<select class="cat-select" id="pracCat"><option value="">ทุกหมวด (${activeQs().length} ข้อ)</option>${cats.map(c => `<option ${c === PRACTICE_CAT ? 'selected' : ''} value="${esc(c)}">${esc(c)} (${activeQs().filter(q => q.category === c).length})</option>`).join('')}</select>` : '';
+    return `<button class="mode-card m-${m}" data-mode="${m}" ${disabled ? 'disabled' : ''}><span class="mi">${d.icon}</span><span class="mt"><b>${d.name}</b><small>${esc(d.desc(SETTINGS))}</small>${extra}</span><span class="mb">${esc(badge)}</span></button>`;
+  }).join('');
+  $('#pracCat')?.addEventListener('change', e => { PRACTICE_CAT = e.target.value; });
+  const note = $('#startNote');
+  note.textContent = closed ? '⛔ ขณะนี้ปิดรับการเล่นชั่วคราว' : myAttempts('classic').some(a => a.result === 'ผ่าน') ? '✅ คุณผ่านแบบทดสอบ Classic แล้ว — เล่นโหมดอื่นเพื่อทำสถิติได้' : 'ผลสอบผ่าน/ไม่ผ่านนับจากโหมด Classic เท่านั้น';
+  renderLeaderboard();
+  const su = gameUrl();
+  $('#shareCard').classList.toggle('hidden', !su);
+  if (su) { const c = $('#shareQR'); drawQR(c.getContext('2d'), su, 0, 0, c.width, { logo: THEMES[currentThemeKey()].icon }); $('#shareCopy').onclick = () => copyText(su); }
+  const mine = ATTEMPTS.filter(a => a.email === ME.email).sort((a, b) => sortKey(b.timestamp) - sortKey(a.timestamp));
+  $('#histCard').classList.toggle('hidden', !mine.length);
+  $('#hist').innerHTML = mine.slice(0, 10).map(h => { const m = MODES[attemptMode(h)] || MODES.classic;
+    return `<li><span>${m.icon}${h.set ? ` <b class="small">ชุด ${esc(h.set)}</b>` : ''} ${fmtDate(h.timestamp)}</span><span><b>${h.points}</b> · ${h.correct}/${h.total} ${attemptMode(h) === 'classic' ? `<span class="pill ${h.result === 'ผ่าน' ? 'ok' : 'bad'}">${esc(h.result)}</span>` : ''}</span></li>`; }).join('');
+  showSection('home');
+}
+function renderLeaderboard() {
+  $('#lbCard').classList.toggle('hidden', !SETTINGS.showLeaderboard);
+  const modes = ['classic', 'attack', 'survival'].filter(modeOn);
+  if (!modes.includes(LB_MODE)) LB_MODE = 'classic';
+  $('#lbTabs').innerHTML = modes.length > 1 ? modes.map(m => `<button data-lb="${m}" class="${m === LB_MODE ? 'on' : ''}">${MODES[m].icon} ${MODES[m].name}</button>`).join('') : '';
+  const lb = leaderboard(LB_MODE);
+  $('#lb').innerHTML = lb.length ? lb.map((x, i) => `<li class="${x.email === ME.email ? 'me' : ''}"><span class="rk">${i + 1}</span><span class="nm">${esc(x.name)}${x.email === ME.email ? ' (คุณ)' : ''}</span><span class="pt">${x.points}</span></li>`).join('') : '<div class="empty">ยังไม่มีใครเล่นโหมดนี้ — เป็นคนแรกเลย!</div>';
+}
+
+async function startGame(mode) {
+  try { await reloadData(); } catch {}
+  if (!SETTINGS.isOpen && !ME.isAdmin) { toast('ขณะนี้ปิดรับการเล่นแล้ว'); return renderHome(); }
+  if (!modeOn(mode)) { toast('โหมดนี้ถูกปิดอยู่'); return renderHome(); }
+  if (mode === 'classic' && attemptsLeft() === 0 && !ME.isAdmin) { toast('คุณใช้สิทธิ์ Classic ครบแล้ว — ลองโหมดอื่นได้'); return renderHome(); }
+  let pool = activeQs().slice();
+  if (mode === 'practice' && PRACTICE_CAT) pool = pool.filter(q => q.category === PRACTICE_CAT);
+  if (!pool.length) return toast('ยังไม่มีคำถามในระบบ');
+  let set = '';
+  if (mode === 'classic' && setsReady()) { set = pickSet(); pool = pool.filter(q => q.set === set); }
+  if (SETTINGS.shuffleQuestions || mode !== 'classic') shuffle(pool);
+  if (mode === 'classic' && !set) pool = pool.slice(0, Math.min(SETTINGS.questionsPerQuiz, pool.length));
+  LAST_MODE = mode;
+  GAME = {
+    mode, set, id: 'A' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase(),
+    items: pool.map(q => { const order = q.choices.map((_, i) => i); if (qType(q) === 'mc' && SETTINGS.shuffleChoices) shuffle(order); return { q, order }; }),
+    idx: 0, points: 0, correct: 0, streak: 0, bestStreak: 0, startedAt: Date.now(), log: [],
+    limit: SETTINGS.timePerQuestion, lives: SETTINGS.survivalLives, maxLives: SETTINGS.survivalLives,
+    attemptNo: myAttempts(mode).length + 1, prevBest: bestOf(mode), locked: false, timeUp: false, num: '',
+  };
+  $('#modeChip').textContent = `${MODES[mode].icon} ${MODES[mode].name}${set ? ' · ชุด ' + set : ''}`;
+  if (set) toast(`🎲 คุณได้ข้อสอบ ชุด ${set} (${pool.length} ข้อ)`);
+  if (mode === 'attack') { const t = SETTINGS.attackSeconds; startTimer(performance.now() + t * 1000, t); }
+  renderQuestion();
+}
+async function quitGame() {
+  if (!GAME) return renderHome();
+  const warn = GAME.mode === 'practice' ? 'ออกจากการฝึก?' : GAME.mode === 'classic' ? 'ออกจากเกม? รอบนี้จะไม่ถูกบันทึกและไม่เสียสิทธิ์' : 'ออกจากเกม? รอบนี้จะไม่ถูกบันทึก';
+  stopTimerIfPerQ();
+  if (await dialog({ text: warn, ok: 'ออก', danger: true })) renderHome();
+  else if (GAME && !GAME.locked) { if (GAME.mode === 'classic' || GAME.mode === 'survival') startTimer(GAME.servedAt + GAME.limit * 1000, GAME.limit); }
+}
+
+function renderQuestion() {
+  $('#feedback').classList.add('hidden');
+  const g = GAME, it = g.items[g.idx], t = qType(it.q);
+  g.locked = false; g.num = '';
+  const total = g.items.length;
+  if (g.mode === 'attack') { $('#qIndex').textContent = `ข้อที่ ${g.idx + 1}`; $('#qPct').textContent = `✔ ${g.correct}`; }
+  else { $('#qIndex').textContent = `ข้อ ${g.idx + 1}/${total}`; const pct = Math.round(g.idx / total * 100); $('#qPct').textContent = pct + '%'; $('#progBar').style.width = pct + '%'; }
+  $('#pts').textContent = g.points; $('#streak').textContent = '🔥 ' + g.streak;
+  $('#lives').classList.toggle('hidden', g.mode !== 'survival');
+  if (g.mode === 'survival') $('#lives').textContent = '❤️'.repeat(g.lives) + '🤍'.repeat(Math.max(0, g.maxLives - g.lives));
+  $('#timer').classList.toggle('practice', g.mode === 'practice');
+  if (g.mode === 'practice') { $('#timerNum').textContent = '∞'; $('#timerBar').style.strokeDashoffset = 0; $('#timer').classList.remove('warn'); }
+  $('#qType').textContent = TYPE_LABEL[t]; $('#qType').className = 'qtype t-' + t;
+  $('#qCat').textContent = it.q.category || ''; $('#qText').textContent = it.q.text;
+  const card = $('#qcard'); card.classList.remove('ok', 'bad'); card.style.animation = 'none'; void card.offsetWidth; card.style.animation = '';
+  const area = $('#answerArea');
+  if (t === 'tf') {
+    area.innerHTML = `<div class="tf-grid"><button class="tf-btn tf-yes" data-i="0"><span>✔</span>ถูก</button><button class="tf-btn tf-no" data-i="1"><span>✘</span>ผิด</button></div>`;
+    area.querySelectorAll('.tf-btn').forEach(b => b.onclick = () => answer(Number(b.dataset.i)));
+  } else if (t === 'num') {
+    const unit = it.q.choices[1] || '';
+    area.innerHTML = `<div class="numpad"><div class="num-display" id="numDisp"><span id="numVal" class="ph">?</span><small>${esc(unit)}</small></div>
+      <div class="keys">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button data-k="${n}">${n}</button>`).join('')}<button data-k="del" class="k-del">⌫</button><button data-k="0">0</button><button data-k="ok" class="k-ok">✓</button></div>
+      <div class="num-correct hidden" id="numCorrect"></div></div>`;
+    area.querySelectorAll('[data-k]').forEach(b => b.onclick = () => numKey(b.dataset.k));
+  } else {
+    area.innerHTML = `<div class="choices">${it.order.map((ci, i) => `<button class="choice" data-i="${i}"><span class="L">${LETTERS[i]}</span><span>${esc(it.q.choices[ci])}</span></button>`).join('')}</div>`;
+    area.querySelectorAll('.choice').forEach(b => b.onclick = () => answer(Number(b.dataset.i)));
+  }
+  showSection('play');
+  g.servedAt = performance.now();
+  if (g.mode === 'classic' || g.mode === 'survival') startTimer(g.servedAt + g.limit * 1000, g.limit);
+}
+function numKey(k) {
+  const g = GAME; if (!g || g.locked) return;
+  if (k === 'ok') { if (g.num === '') { $('#numDisp').classList.add('shake'); setTimeout(() => $('#numDisp')?.classList.remove('shake'), 400); return; } return answer(Number(g.num)); }
+  if (k === 'del') g.num = g.num.slice(0, -1); else if (g.num.length < 4) g.num = (g.num === '0' ? '' : g.num) + k;
+  const v = $('#numVal'); v.textContent = g.num || '?'; v.classList.toggle('ph', !g.num);
+}
+function onKey(e) {
+  const g = GAME; if (!g || $('#play').classList.contains('hidden')) return;
+  if (!$('#feedback').classList.contains('hidden')) { if (e.key === 'Enter') $('#nextBtn').click(); return; }
+  if (g.locked) return;
+  const t = qType(g.items[g.idx].q);
+  if (t === 'num') { if (/^\d$/.test(e.key)) numKey(e.key); else if (e.key === 'Backspace') numKey('del'); else if (e.key === 'Enter') numKey('ok'); }
+  else { const i = 'abcd1234'.indexOf(e.key.toLowerCase()) % 4; const n = t === 'tf' ? 2 : g.items[g.idx].order.length; if (i >= 0 && i < n) answer(i); }
+}
+
+function stopTimer() { if (RAF) cancelAnimationFrame(RAF); RAF = null; }
+function stopTimerIfPerQ() { if (GAME && GAME.mode !== 'attack') stopTimer(); }
+function startTimer(endTs, total) {
+  stopTimer();
+  const tick = () => {
+    const left = Math.max(0, (endTs - performance.now()) / 1000);
+    $('#timerNum').textContent = Math.ceil(left);
+    $('#timerBar').style.strokeDashoffset = C_TIMER * (1 - left / total);
+    $('#timer').classList.toggle('warn', left <= 5);
+    if (GAME?.mode === 'attack') $('#progBar').style.width = (100 - left / total * 100) + '%';
+    if (left <= 0) { stopTimer(); return onTimeUp(); }
+    RAF = requestAnimationFrame(tick);
+  };
+  tick();
+}
+function onTimeUp() {
+  const g = GAME; if (!g) return;
+  if (g.mode === 'attack') { g.timeUp = true; if (!g.locked) { g.locked = true; finish(); } return; }
+  answer(null);
+}
+
+function answer(value) {
+  const g = GAME; if (!g || g.locked) return;
+  g.locked = true; stopTimerIfPerQ();
+  const it = g.items[g.idx], t = qType(it.q);
+  const elapsed = Math.min(g.limit, (performance.now() - g.servedAt) / 1000);
+  const timedOut = value === null;
+  let correct = false, chosenText = '(หมดเวลา)', correctText;
+  if (t === 'num') {
+    const unit = it.q.choices[1] ? ' ' + it.q.choices[1] : '';
+    correct = !timedOut && Number(value) === Number(it.q.choices[0]);
+    if (!timedOut) chosenText = value + unit; correctText = it.q.choices[0] + unit;
+  } else {
+    correct = !timedOut && it.order[value] === it.q.answer;
+    if (!timedOut) chosenText = it.q.choices[it.order[value]]; correctText = it.q.choices[it.q.answer];
+  }
+  let gained = 0;
+  if (correct) {
+    g.streak++; g.bestStreak = Math.max(g.bestStreak, g.streak); g.correct++;
+    if (g.mode === 'attack') gained = 100 + (g.streak >= 3 ? 50 : 0);
+    else if (g.mode !== 'practice') gained = 100 + Math.round(50 * Math.max(0, 1 - elapsed / g.limit)) + (g.streak >= 3 ? 25 : 0);
+    g.points += gained;
+  } else { g.streak = 0; if (g.mode === 'survival') g.lives--; }
+  g.log.push({ questionNo: g.idx + 1, questionId: it.q.id, category: it.q.category || '', question: it.q.text, chosen: chosenText, correctAnswer: correctText,
+    isCorrect: correct ? 'ถูก' : 'ผิด', timeSec: +elapsed.toFixed(1), points: gained, explanation: it.q.explanation || '' });
+
+  // mark UI
+  const area = $('#answerArea');
+  if (t === 'num') {
+    $('#numDisp').classList.add(correct ? 'ok' : 'bad');
+    area.querySelectorAll('[data-k]').forEach(b => b.disabled = true);
+    if (!correct) { const c = $('#numCorrect'); c.textContent = '✔ คำตอบที่ถูก: ' + correctText; c.classList.remove('hidden'); }
+  } else {
+    const btns = [...area.querySelectorAll('[data-i]')];
+    btns.forEach(b => b.disabled = true);
+    area.firstElementChild.classList.add('locked');
+    const ci = t === 'tf' ? it.q.answer : it.order.indexOf(it.q.answer);
+    btns[ci]?.classList.add('correct');
+    if (!timedOut && !correct) btns[value]?.classList.add('wrong');
+  }
+  $('#pts').textContent = g.points; $('#streak').textContent = '🔥 ' + g.streak;
+  if (g.mode === 'survival') $('#lives').textContent = '❤️'.repeat(Math.max(0, g.lives)) + '🤍'.repeat(Math.max(0, g.maxLives - g.lives));
+  if (correct) { navigator.vibrate?.(30); if (gained) { const f = document.createElement('div'); f.className = 'float-pts'; f.textContent = '+' + gained; document.body.appendChild(f); setTimeout(() => f.remove(), 1000); } }
+  else { $('#qcard').classList.add('shake'); setTimeout(() => $('#qcard')?.classList.remove('shake'), 400); navigator.vibrate?.([60, 40, 60]); }
+
+  const last = g.idx + 1 >= g.items.length;
+  // Time Attack: quick flash, no explanation pause
+  if (g.mode === 'attack') {
+    const fl = $('#flash'); fl.className = 'flash ' + (correct ? 'ok' : 'bad'); fl.textContent = correct ? (g.streak >= 3 ? `🔥 x${g.streak}` : '✔') : '✘';
+    setTimeout(() => { fl.className = 'flash hidden'; if (!GAME) return; if (last || g.timeUp) finish(); else { g.idx++; renderQuestion(); } }, correct ? 450 : 900);
+    return;
+  }
+  const done = last || (g.mode === 'survival' && g.lives <= 0);
+  const fb = $('#feedback'); fb.classList.remove('hidden', 'ok', 'bad'); fb.classList.add(correct ? 'ok' : 'bad');
+  let title = correct ? (g.streak >= 3 ? `ถูกต้อง! 🔥 ${g.streak} ติด` : 'ถูกต้อง! 🎉') : (timedOut ? 'หมดเวลา ⏰' : 'ยังไม่ถูก 😅');
+  if (!correct && g.mode === 'survival') title += g.lives > 0 ? ` · เสีย 1 ชีวิต` : ' · หมดชีวิต 💀';
+  $('#fbTitle').textContent = title;
+  $('#fbGain').textContent = g.mode === 'practice' ? (correct ? '✔' : '✘') : '+' + gained;
+  $('#fbExp').textContent = (SETTINGS.showExplanation || g.mode === 'practice') ? (it.q.explanation || '') : '';
+  $('#nextBtn').textContent = done ? 'ดูผลลัพธ์ 🏁' : 'ข้อถัดไป →';
+  $('#nextBtn').disabled = false;
+  $('#nextBtn').onclick = () => { if (done) finish(); else { g.idx++; renderQuestion(); } };
+}
+
+async function finish() {
+  const g = GAME; if (!g) return;
+  stopTimer();
+  $('#nextBtn').disabled = true; $('#nextBtn').textContent = 'กำลังบันทึก…';
+  const total = g.log.length, percent = total ? Math.round(g.correct / total * 100) : 0, timestamp = nowStamp();
+  const attempt = { attemptId: g.id, timestamp, name: ME.name, email: ME.email, points: g.points, correct: g.correct, total, percent,
+    result: g.mode === 'classic' ? (percent >= SETTINGS.passPercent ? 'ผ่าน' : 'ไม่ผ่าน') : '-', durationSec: Math.round((Date.now() - g.startedAt) / 1000),
+    attemptNo: g.attemptNo, bestStreak: g.bestStreak, mode: g.mode, set: g.set || '' };
+  let saved = null;
+  if (g.mode !== 'practice') {
+    const rows = g.log.map(({ explanation, ...l }) => ({ attemptId: g.id, timestamp, email: ME.email, name: ME.name, ...l }));
+    saved = true;
+    try { await STORE.addAttempt(attempt, rows); }
+    catch (e) { console.error(e); saved = false; const p = LS.get('pending', []); p.push({ attempt, rows }); LS.set('pending', p); }
+    ATTEMPTS.push(attempt);
+  }
+  const prevBest = g.prevBest; GAME = null;
+  showResult(attempt, g.log, saved, prevBest);
+}
+async function flushPending() {
+  const p = LS.get('pending', []); if (!p.length) return;
+  const rest = [];
+  for (const x of p) { try { await STORE.addAttempt(x.attempt, x.rows); } catch { rest.push(x); } }
+  LS.set('pending', rest);
+  if (p.length > rest.length) { toast(`ส่งคะแนนที่ค้างไว้สำเร็จ ${p.length - rest.length} รายการ`); try { await reloadData(); } catch {} }
+}
+
+function showResult(a, log, saved, prevBest) {
+  $('#feedback').classList.add('hidden');
+  const p = a.percent, m = a.mode, passed = a.result === 'ผ่าน';
+  const record = (m === 'attack' || m === 'survival') && a.points > prevBest && a.points > 0;
+  let tier;
+  if (m === 'classic') tier = passed ? (p >= 90 ? ['🏆', 'สุดยอด! ระดับผู้เชี่ยวชาญ'] : ['🎉', 'ยินดีด้วย คุณผ่านแล้ว!']) : (p >= 50 ? ['💪', 'เกือบแล้ว! ลองอีกครั้ง'] : ['📚', 'ทบทวนเนื้อหาแล้วลองใหม่นะ']);
+  else if (m === 'attack') tier = ['⚡', `ตอบถูก ${a.correct} ข้อใน ${SETTINGS.attackSeconds} วินาที!`];
+  else if (m === 'survival') tier = [a.correct >= 10 ? '🦸' : '❤️', `รอดมาได้ ${a.total} ข้อ!`];
+  else tier = ['📖', p >= 80 ? 'แม่นมาก! พร้อมสอบแล้ว' : 'ฝึกครบแล้ว — ทบทวนข้อที่ผิดด้านล่าง'];
+  $('#rEmoji').textContent = tier[0]; $('#rTitle').textContent = tier[1];
+  $('#rSub').innerHTML = m === 'classic' ? `${a.set ? `ชุด ${a.set} · ` : ''}เกณฑ์ผ่าน ${SETTINGS.passPercent}% · <span class="pill ${passed ? 'ok' : 'bad'}">${a.result}</span>`
+    : `${MODES[m].icon} ${MODES[m].name}` + (record ? ' · <span class="pill ok">🏅 สถิติใหม่!</span>' : prevBest && m !== 'practice' ? ` · สถิติเดิม ${prevBest}` : '');
+  $('#rCorrect').textContent = `ถูก ${a.correct}/${a.total} ข้อ`;
+  $('#rPts').textContent = m === 'practice' ? '–' : a.points; $('#rStreak').textContent = a.bestStreak; $('#rTime').textContent = fmtSec(a.durationSec);
+  $('#rSaved').textContent = saved === null ? '📖 โหมดฝึก ไม่บันทึกคะแนน' : saved ? (MODE === 'ms' ? '✅ บันทึกคะแนนลง Excel แล้ว' : '✅ บันทึกคะแนนแล้ว (โหมดทดลอง — เก็บในเครื่องนี้)') : '⚠️ ยังบันทึกไม่สำเร็จ ระบบจะส่งให้อัตโนมัติเมื่อเปิดหน้านี้ครั้งถัดไป';
+  $('#review').innerHTML = log.length ? log.map((v, i) => `<li><div class="rq">${i + 1}. ${esc(v.question)}</div>
+    <div class="${v.isCorrect === 'ถูก' ? 'ok' : 'bad'}">${v.isCorrect === 'ถูก' ? '✔' : '✘'} คำตอบของคุณ: ${esc(v.chosen)}</div>
+    ${v.isCorrect === 'ถูก' ? '' : `<div class="ok">✔ คำตอบที่ถูก: ${esc(v.correctAnswer)}</div>`}
+    ${(SETTINGS.showExplanation || m === 'practice') && v.explanation ? `<div class="ra small">💡 ${esc(v.explanation)}</div>` : ''}</li>`).join('') : '<div class="empty">ไม่ได้ตอบคำถาม</div>';
+  const left = attemptsLeft();
+  const canAgain = m !== 'classic' || left !== 0 || ME.isAdmin;
+  $('#againBtn').classList.toggle('hidden', !canAgain);
+  $('#againBtn').textContent = m === 'classic' && left !== null ? `เล่นอีกครั้ง (เหลือ ${left} สิทธิ์)` : `เล่น ${MODES[m].name} อีกครั้ง`;
+  showSection('result');
+  $('#rRing').style.transition = 'none'; $('#rRing').style.strokeDashoffset = C_RING;
+  requestAnimationFrame(() => requestAnimationFrame(() => { $('#rRing').style.transition = 'stroke-dashoffset 1.2s ease'; $('#rRing').style.strokeDashoffset = C_RING * (1 - p / 100); }));
+  let n = 0; const step = Math.max(1, Math.ceil(p / 40));
+  const iv = setInterval(() => { n = Math.min(p, n + step); const el = $('#rPct'); if (!el) return clearInterval(iv); el.textContent = n; if (n >= p) clearInterval(iv); }, 25);
+  if (passed || record || (m === 'practice' && p >= 80)) confetti();
+}
+
+function confetti() {
+  const cv = $('#confetti'); cv.classList.remove('hidden');
+  const ctx = cv.getContext('2d'), dpr = devicePixelRatio || 1;
+  cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const colors = THEMES[currentThemeKey()].confetti || ['#4338ca', '#7c3aed', '#f59e0b', '#16a34a', '#ec4899', '#06b6d4'];
+  const parts = Array.from({ length: 150 }, () => ({ x: innerWidth / 2 + (Math.random() - .5) * 80, y: innerHeight * .35, vx: (Math.random() - .5) * 12, vy: -Math.random() * 13 - 4, r: Math.random() * 6 + 4, c: colors[Math.floor(Math.random() * colors.length)], a: Math.random() * Math.PI, va: (Math.random() - .5) * .3 }));
+  const t0 = performance.now();
+  (function frame(t) {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    parts.forEach(p => { p.vy += .35; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += p.va; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore(); });
+    if (t - t0 < 3500) requestAnimationFrame(frame); else { ctx.clearRect(0, 0, innerWidth, innerHeight); cv.classList.add('hidden'); }
+  })(t0);
+}
+
+/* =================================================================
+   QR CODE & POSTER
+================================================================= */
+const isWebUrl = u => /^https?:\/\/[^\s]+$/i.test(String(u || '').trim());
+function gameUrl() { const u = String(SETTINGS.shareUrl || '').trim(); if (isWebUrl(u)) return u; return /^https?:$/.test(location.protocol) ? location.origin + location.pathname : ''; }
+function qrEncode(text, level) {
+  let t = String(text).trim(); try { t = encodeURI(decodeURI(t)); } catch { t = encodeURI(t); }
+  const q = new QRLib.QRCode(-1, QRLib.Level[level]); q.addData(t); q.make(); return q;
+}
+function drawQR(ctx, text, x, y, size, { fg = '#111827', bg = '#ffffff', logo = '' } = {}) {
+  const q = qrEncode(text, logo ? 'H' : 'M'), n = q.getModuleCount(), quiet = 4;
+  const cell = Math.max(1, Math.floor(size / (n + quiet * 2))), off = Math.floor((size - cell * n) / 2);
+  ctx.fillStyle = bg; ctx.fillRect(x, y, size, size); ctx.fillStyle = fg;
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) ctx.fillRect(x + off + c * cell, y + off + r * cell, cell, cell);
+  if (logo) {
+    const b = Math.round(cell * n * 0.22), bx = x + size / 2 - b / 2, by = y + size / 2 - b / 2;
+    ctx.fillStyle = bg; roundRect(ctx, bx, by, b, b, b * 0.22); ctx.fill();
+    ctx.font = `${Math.round(b * 0.66)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(logo, x + size / 2, y + size / 2 + b * 0.04);
+  }
+}
+function roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function wrapText(ctx, text, maxW) {
+  const words = String(text).split(/(\s+)/), lines = []; let line = '';
+  for (const w of words) { const test = line + w; if (ctx.measureText(test).width > maxW && line.trim()) { lines.push(line.trim()); line = w.trimStart(); } else line = test; }
+  if (line.trim()) lines.push(line.trim());
+  return lines.flatMap(l => { if (ctx.measureText(l).width <= maxW) return [l]; const out = []; let cur = ''; for (const ch of l) { if (ctx.measureText(cur + ch).width > maxW) { out.push(cur); cur = ch; } else cur += ch; } return cur ? [...out, cur] : out; });
+}
+const cssVar = (k, d) => getComputedStyle(document.documentElement).getPropertyValue(k).trim() || d;
+async function makePoster(url, headline) {
+  await document.fonts?.ready;
+  const W = 1240, H = 1754, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d'), t = THEMES[currentThemeKey()];
+  const brand = cssVar('--brand', '#4338ca'), brand2 = cssVar('--brand-2', '#a855f7'), bg = cssVar('--bg', '#f4f4fb');
+  const F = (w, px) => `${w} ${px}px "IBM Plex Sans Thai", system-ui, sans-serif`, EMO = px => `${px}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  const g = ctx.createLinearGradient(0, 0, W, 700); g.addColorStop(0, '#0f0d2e'); g.addColorStop(.45, brand); g.addColorStop(1, brand2);
+  ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, 0); ctx.lineTo(W, 640); ctx.quadraticCurveTo(W / 2, 760, 0, 640); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.beginPath(); ctx.arc(W - 120, 120, 260, 0, Math.PI * 2); ctx.fill();
+  // decorations
+  if (t.fx.length) { ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; [[90, 90, 54], [1150, 560, 46], [70, 600, 40], [640, 60, 34], [1000, 330, 30]].forEach(([x, y, s], i) => { ctx.globalAlpha = .55; ctx.font = EMO(s); ctx.fillText(t.fx[i % t.fx.length], x, y); }); ctx.globalAlpha = 1; }
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = 'rgba(255,255,255,.16)'; roundRect(ctx, 90, 120, 420, 56, 28); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = F(600, 26); ctx.fillText('HR KNOWLEDGE SHARING', 118, 158);
+  if (t.icon) { ctx.font = EMO(150); ctx.textAlign = 'right'; ctx.fillText(t.icon, W - 90, 290); ctx.textAlign = 'left'; }
+  ctx.font = F(700, 84); let y = 290;
+  wrapText(ctx, SETTINGS.title, W - 360).slice(0, 2).forEach(l => { ctx.fillText(l, 90, y); y += 100; });
+  ctx.font = F(400, 36); ctx.fillStyle = 'rgba(255,255,255,.88)';
+  wrapText(ctx, SETTINGS.subtitle, W - 180).slice(0, 2).forEach(l => { ctx.fillText(l, 90, y); y += 50; });
+  if (t.greet) { ctx.font = F(600, 30); const gw = ctx.measureText(t.greet).width + 56; ctx.fillStyle = 'rgba(255,255,255,.18)'; roundRect(ctx, 90, y + 4, Math.min(gw, W - 180), 60, 30); ctx.fill(); ctx.fillStyle = '#fff'; ctx.fillText(t.greet, 118, y + 45); }
+  // QR card
+  const cw = 880, cx = (W - cw) / 2, cy = 690;
+  ctx.shadowColor = 'rgba(30,27,75,.25)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 18; ctx.fillStyle = '#fff'; roundRect(ctx, cx, cy, cw, 880, 48); ctx.fill();
+  ctx.shadowColor = 'transparent';
+  ctx.fillStyle = brand; ctx.font = F(700, 44); ctx.textAlign = 'center';
+  const hl = wrapText(ctx, headline, cw - 70).slice(0, 2); hl.forEach((l, i) => ctx.fillText(l, W / 2, cy + 78 + i * 54));
+  const qy = cy + (hl.length > 1 ? 150 : 110);
+  drawQR(ctx, url, (W - 560) / 2, qy, 560, { logo: t.icon || '🎯' });
+  ctx.fillStyle = '#16193a'; ctx.font = F(700, 40); ctx.fillText('📱 สแกนเพื่อเล่นเลย!', W / 2, qy + 610);
+  ctx.fillStyle = '#6b6f8e'; ctx.font = F(400, 24); const shortUrl = url.replace(/^https?:\/\//, '').replace(/\/$/, ''); ctx.fillText(shortUrl.length > 64 ? shortUrl.slice(0, 61) + '…' : shortUrl, W / 2, qy + 655);
+  // steps
+  const steps = [['1', 'สแกน QR', 'ด้วยกล้องมือถือ'], ['2', 'เข้าสู่ระบบ', 'ด้วยบัญชี Microsoft'], ['3', 'เลือกโหมด', 'แล้วเริ่มเล่น!']];
+  const sy = 1630, sw = (W - 180) / 3;
+  steps.forEach(([n, a, b], i) => {
+    const sx = 90 + i * sw + sw / 2;
+    ctx.fillStyle = brand; ctx.beginPath(); ctx.arc(sx, sy, 34, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = F(700, 34); ctx.fillText(n, sx, sy + 12);
+    ctx.fillStyle = '#16193a'; ctx.font = F(700, 28); ctx.fillText(a, sx, sy + 72);
+    ctx.fillStyle = '#6b6f8e'; ctx.font = F(400, 22); ctx.fillText(b, sx, sy + 104);
+  });
+  // modes strip under the card's bottom edge
+  const modes = Object.entries(MODES).filter(([m]) => modeOn(m)).map(([, d]) => `${d.icon} ${d.name}`).join('   ·   ');
+  ctx.fillStyle = brand; ctx.font = F(600, 26); ctx.fillText(modes, W / 2, cy + 835);
+  return cv;
+}
+function downloadCanvas(cv, name) {
+  cv.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }, 'image/png');
+}
+async function copyText(t) { try { await navigator.clipboard.writeText(t); toast('คัดลอกลิงก์แล้ว'); } catch { await dialog({ text: 'คัดลอกลิงก์นี้: ' + t, cancel: '' }); } }
+
+let POSTER = null;
+function renderQR() {
+  const inp = $('#qrUrl');
+  if (!inp.dataset.init) {
+    inp.dataset.init = 1; inp.value = gameUrl(); $('#posterHead').value = 'มาร่วมทดสอบความรู้ ลุ้นติด Top 10!';
+    let tm; const upd = () => { clearTimeout(tm); tm = setTimeout(updateQR, 250); };
+    inp.oninput = upd; $('#posterHead').oninput = upd; $('#qrLogo').onchange = updateQR;
+    $('#qrDownload').onclick = () => { const u = inp.value.trim(); if (!isWebUrl(u)) return toast('กรุณาใส่ลิงก์ที่ขึ้นต้นด้วย https://'); const cv = document.createElement('canvas'); cv.width = cv.height = 1200; drawQR(cv.getContext('2d'), u, 0, 0, 1200, { logo: $('#qrLogo').checked ? (THEMES[currentThemeKey()].icon || '🎯') : '' }); downloadCanvas(cv, 'quiz-qr-code.png'); };
+    $('#qrCopy').onclick = () => isWebUrl(inp.value) ? copyText(inp.value.trim()) : toast('กรุณาใส่ลิงก์ที่ขึ้นต้นด้วย https://');
+    $('#qrSave').onclick = async () => { const u = inp.value.trim(); if (!isWebUrl(u)) return toast('กรุณาใส่ลิงก์ที่ขึ้นต้นด้วย https://'); try { SETTINGS = { ...SETTINGS, shareUrl: u }; await STORE.saveSettings(SETTINGS); toast('บันทึกลิงก์หลักแล้ว'); } catch (e) { toast(e.message); } };
+    $('#posterDownload').onclick = () => POSTER ? downloadCanvas(POSTER, 'quiz-poster-A4.png') : toast('กรุณาใส่ลิงก์ก่อน');
+    $('#posterPrint').onclick = () => { if (!POSTER) return toast('กรุณาใส่ลิงก์ก่อน'); const p = $('#printArea'); p.innerHTML = `<img src="${POSTER.toDataURL('image/png')}">`; setTimeout(() => { try { window.print(); } catch { toast('เบราว์เซอร์นี้พิมพ์ไม่ได้ — ใช้ปุ่มดาวน์โหลดโปสเตอร์แทน'); } }, 200); };
+  }
+  updateQR();
+}
+async function updateQR() {
+  const u = $('#qrUrl')?.value.trim(), warn = $('#qrWarn'), ok = isWebUrl(u);
+  let msg = '';
+  if (!u) msg = location.protocol === 'file:' ? 'ตอนนี้เปิดจากไฟล์ในเครื่อง — ใส่ลิงก์เว็บจริงหลังจากนำไฟล์ขึ้นเว็บแล้ว (เช่น https://quiz.yourcompany.com/)' : 'กรุณาใส่ลิงก์เว็บเกม';
+  else if (!ok) msg = 'ลิงก์ต้องขึ้นต้นด้วย http:// หรือ https://';
+  else if (/localhost|127\.0\.0\.1/.test(u)) msg = '⚠️ ลิงก์ localhost ใช้ได้เฉพาะเครื่องนี้ มือถือพนักงานจะเปิดไม่ได้';
+  warn.textContent = msg; warn.classList.toggle('hidden', !msg);
+  const cv = $('#qrCanvas'), ctx = cv.getContext('2d');
+  if (!ok) { ctx.fillStyle = '#f1f2f8'; ctx.fillRect(0, 0, cv.width, cv.height); ctx.fillStyle = '#9a9cb8'; ctx.font = '600 34px "IBM Plex Sans Thai",sans-serif'; ctx.textAlign = 'center'; ctx.fillText('ใส่ลิงก์เพื่อสร้าง QR', cv.width / 2, cv.height / 2); $('#posterImg').removeAttribute('src'); POSTER = null; return; }
+  drawQR(ctx, u, 0, 0, cv.width, { logo: $('#qrLogo').checked ? (THEMES[currentThemeKey()].icon || '🎯') : '' });
+  POSTER = await makePoster(u, $('#posterHead').value.trim() || 'สแกนเพื่อร่วมเล่น');
+  $('#posterImg').src = POSTER.toDataURL('image/png');
+}
+
+/* =================================================================
+   3. ADMIN
+================================================================= */
+let TAB = 'dash', editingId = null;
+async function showAdmin() {
+  mount('#tpl-admin');
+  $('#adminEmail').textContent = ME.email;
+  $('#toQuiz').onclick = () => { location.hash = ''; };
+  $('#logout2').onclick = logout;
+  $('#tabs').onclick = e => { const b = e.target.closest('button'); if (b) switchTab(b.dataset.tab); };
+  $('#refresh').onclick = async () => { await adminReload(); toast('อัปเดตข้อมูลล่าสุดแล้ว'); };
+  $('#search').oninput = renderResults; $('#filterResult').onchange = renderResults; $('#filterMode').onchange = renderResults;
+  $('#qTypeSel').onchange = e => setEditorType(e.target.value);
+  $('#exportXlsx').onclick = exportScores;
+  $('#clearAll').onclick = clearAll;
+  $('#rows').onclick = deleteAttempt;
+  $('#qsearch').oninput = renderQuestions; $('#qsetFilter').onchange = renderQuestions;
+  $('#addQ').onclick = () => openEditor(null);
+  $('#qlist').onclick = onQuestionClick;
+  $('#addChoice').onclick = () => { if ($('#choiceRows').children.length < 4) $('#choiceRows').appendChild(choiceRow()); };
+  $('#qCancel').onclick = () => $('#qModal').classList.add('hidden');
+  $('#qForm').onsubmit = saveQuestion;
+  $('#importFile').onchange = importQuestions;
+  $('#exportQ').onclick = exportQuestions;
+  $('#settingsForm').onsubmit = saveSettings;
+  $('#resetDemo').onclick = async () => { if (!(await dialog({ text: 'ลบข้อมูลทดลองทั้งหมดในเบราว์เซอร์นี้?', ok: 'ลบ', danger: true }))) return; ['settings', 'questions', 'attempts', 'answers', 'pending'].forEach(LS.del); await adminReload(); toast('รีเซ็ตแล้ว'); };
+  if (STORE.webUrl) { $('#openExcel').href = STORE.webUrl; $('#openExcel').classList.remove('hidden'); }
+  if (MODE === 'ms') $('#resetDemo').closest('.card').classList.add('hidden');
+  await adminReload();
+}
+async function adminReload() {
+  try { await reloadData(true); } catch (e) { toast('โหลดข้อมูลไม่สำเร็จ: ' + e.message); }
+  bindSettings(); renderAll();
+}
+function switchTab(t) {
+  TAB = t;
+  if (THEME_PREVIEW && t !== 'settings') { THEME_PREVIEW = null; applyTheme(); }
+  $$('#tabs button').forEach(x => x.classList.toggle('on', x.dataset.tab === t));
+  $$('[data-pane]').forEach(p => p.classList.toggle('hidden', p.dataset.pane !== t));
+  renderAll();
+}
+function renderAll() { ({ dash: renderDash, results: renderResults, questions: renderQuestions, settings: renderSettings, qr: renderQR, system: renderSystem })[TAB](); }
+
+const classicAttempts = () => ATTEMPTS.filter(a => attemptMode(a) === 'classic');
+function summaryByPerson() {
+  const m = new Map(), other = new Map();
+  ATTEMPTS.forEach(a => { if (attemptMode(a) !== 'classic') other.set(a.email, (other.get(a.email) || 0) + 1); });
+  for (const a of classicAttempts()) {
+    const p = m.get(a.email) || { name: a.name, email: a.email, attempts: 0, bestPoints: 0, bestPercent: 0, last: a.timestamp, passed: false };
+    p.attempts++; p.name = a.name || p.name; p.bestPoints = Math.max(p.bestPoints, a.points); p.bestPercent = Math.max(p.bestPercent, a.percent);
+    if (sortKey(a.timestamp) > sortKey(p.last)) p.last = a.timestamp; if (a.result === 'ผ่าน') p.passed = true; m.set(a.email, p);
+  }
+  return [...m.values()].map(p => ({ ...p, otherPlays: other.get(p.email) || 0 })).sort((x, y) => y.bestPoints - x.bestPoints);
+}
+function questionStats() {
+  const m = new Map();
+  for (const r of ANSWERS) { const s = m.get(r.questionId) || { questionId: r.questionId, category: r.category, question: r.question, answered: 0, correct: 0, time: 0 }; s.answered++; if (r.isCorrect === 'ถูก') s.correct++; s.time += Number(r.timeSec) || 0; m.set(r.questionId, s); }
+  return [...m.values()].map(s => ({ ...s, rate: Math.round(s.correct / s.answered * 100), avgTime: +(s.time / s.answered).toFixed(1) })).sort((a, b) => a.rate - b.rate);
+}
+
+function renderDash() {
+  const people = summaryByPerson();
+  $('#kPlayers').textContent = people.length;
+  const CA = classicAttempts();
+  $('#kAttempts').textContent = ATTEMPTS.length;
+  $('#kAvg').textContent = (CA.length ? Math.round(CA.reduce((s, a) => s + a.percent, 0) / CA.length) : 0) + '%';
+  $('#kPass').textContent = people.filter(p => p.passed).length;
+  const open = SETTINGS.isOpen;
+  $('#openDot').style.background = open ? 'var(--ok)' : 'var(--bad)';
+  $('#openText').textContent = open ? 'เกมเปิดให้เล่นอยู่' : 'เกมปิดอยู่';
+  $('#openSub').textContent = `คำถามที่ใช้งาน ${activeQs().length} ข้อ · เล่นรอบละ ${Math.min(SETTINGS.questionsPerQuiz, activeQs().length)} ข้อ · ${STORE.label}`;
+  const tb = $('#toggleOpen'); tb.className = 'btn btn-sm ' + (open ? 'btn-danger' : 'btn-primary'); tb.textContent = open ? 'ปิดเกม' : 'เปิดเกม';
+  tb.onclick = async () => { tb.disabled = true; try { SETTINGS = { ...SETTINGS, isOpen: !open }; await STORE.saveSettings(SETTINGS); toast(open ? 'ปิดเกมแล้ว' : 'เปิดเกมแล้ว'); } catch (e) { toast(e.message); } renderDash(); };
+  const buckets = [0, 0, 0, 0, 0]; CA.forEach(a => buckets[Math.min(4, Math.floor(a.percent / 20))]++);
+  const max = Math.max(1, ...buckets), labels = ['0–19', '20–39', '40–59', '60–79', '80–100'];
+  $('#dist').innerHTML = buckets.map((n, i) => `<div class="b"><span>${n}</span><i style="height:${n / max * 100}%"></i><small>${labels[i]}</small></div>`).join('');
+  const lb = leaderboard();
+  $('#adminLb').innerHTML = lb.length ? lb.map((x, i) => `<li><span class="rk">${i + 1}</span><span class="nm">${esc(x.name)}<br><small class="muted">${esc(x.email)}</small></span><span class="pt">${x.points}</span></li>`).join('') : '<div class="empty">ยังไม่มีข้อมูล</div>';
+  $('#setStats').innerHTML = `<div class="set-grid">${SETS.map(k => {
+    const at = CA.filter(a => a.set === k), nq = QUESTIONS.filter(q => q.active !== false && q.set === k).length;
+    const avg = at.length ? Math.round(at.reduce((s, a) => s + a.percent, 0) / at.length) : null, pass = at.filter(a => a.result === 'ผ่าน').length;
+    return `<div class="set-box"><b>ชุด ${k}</b><span class="big">${avg === null ? '–' : avg + '%'}</span><small>คะแนนเฉลี่ย</small><small>${at.length} ครั้ง · ผ่าน ${pass} · ${nq} ข้อ</small></div>`; }).join('')}</div>
+    <p class="small muted" style="margin-top:8px">${SETTINGS.useSets ? '🎲 เปิดสุ่มชุดข้อสอบอยู่ — ถ้าคะแนนเฉลี่ยชุดใดต่างจากชุดอื่นมาก ควรปรับความยากของคำถามในชุดนั้น' : '⚪ ปิดการสุ่มชุดข้อสอบอยู่ (Classic สุ่มจากคำถามทั้งหมด)'}</p>`;
+  const qs = questionStats();
+  $('#qstats').innerHTML = qs.length ? qs.slice(0, 10).map(q => { const c = q.rate < 50 ? 'var(--bad)' : q.rate < 75 ? 'var(--accent)' : 'var(--ok)';
+    return `<div class="qstat"><div class="t">${esc(q.question)}</div><div style="display:flex;gap:10px;align-items:center"><div class="meter" style="flex:1"><i style="width:${q.rate}%;background:${c}"></i></div><b class="small">${q.rate}%</b><span class="small muted">${q.answered} ครั้ง</span></div></div>`; }).join('') : '<div class="empty">ยังไม่มีข้อมูลการตอบ</div>';
+}
+
+function renderResults() {
+  const q = $('#search').value.trim().toLowerCase(), f = $('#filterResult').value, fm = $('#filterMode').value;
+  const list = ATTEMPTS.filter(r => (!q || String(r.name).toLowerCase().includes(q) || r.email.includes(q)) && (!f || r.result === f) && (!fm || attemptMode(r) === fm)).sort((a, b) => sortKey(b.timestamp) - sortKey(a.timestamp));
+  $('#rows').innerHTML = list.length ? list.map(r => `<tr><td>${fmtDate(r.timestamp)}</td><td>${(MODES[attemptMode(r)] || MODES.classic).icon} ${(MODES[attemptMode(r)] || MODES.classic).name}</td><td>${r.set ? `<span class="pill mid">${esc(r.set)}</span>` : '<span class="muted">–</span>'}</td><td>${esc(r.name)}</td><td class="muted">${esc(r.email)}</td>
+    <td class="num"><b>${r.points}</b></td><td class="num">${r.correct}/${r.total}</td><td class="num">${r.percent}%</td>
+    <td>${r.result === '-' || !r.result ? '<span class="muted">–</span>' : `<span class="pill ${r.result === 'ผ่าน' ? 'ok' : 'bad'}">${esc(r.result)}</span>`}</td><td class="num">${fmtSec(r.durationSec)}</td><td class="num">${r.attemptNo}</td>
+    <td><button class="btn btn-danger btn-sm" data-del="${esc(r.attemptId)}">ลบ</button></td></tr>`).join('') : '<tr><td colspan="12" class="empty">ไม่พบข้อมูล</td></tr>';
+}
+async function deleteAttempt(e) {
+  const id = e.target.dataset.del; if (!id) return;
+  if (!(await dialog({ text: 'ลบผลคะแนนนี้? (พนักงานจะได้สิทธิ์เล่นคืน 1 ครั้ง)', ok: 'ลบ', danger: true }))) return;
+  e.target.disabled = true;
+  try { await STORE.deleteAttempt(id); toast('ลบแล้ว'); } catch (err) { toast(err.message); }
+  adminReload();
+}
+async function clearAll() {
+  const v = await dialog({ text: 'พิมพ์คำว่า "ยืนยัน" เพื่อล้างผลคะแนนทั้งหมด (ระบบจะดาวน์โหลดไฟล์สำรองให้ก่อน)', input: true, ok: 'ล้างข้อมูล', danger: true });
+  if (v !== 'ยืนยัน') return;
+  exportScores('backup');
+  try { await STORE.clearAll(); toast('ล้างข้อมูลแล้ว'); } catch (err) { toast(err.message); }
+  adminReload();
+}
+function exportScores(prefix) {
+  if (!window.XLSX) return toast('โหลดไลบรารี Excel ไม่สำเร็จ');
+  const wb = XLSX.utils.book_new();
+  const add = (name, head, keys, rows, widths) => { const ws = XLSX.utils.aoa_to_sheet([head, ...rows.map(r => keys.map(k => r[k] ?? ''))]); ws['!cols'] = widths.map(w => ({ wch: w })); ws['!autofilter'] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: rows.length, c: head.length - 1 } }) }; XLSX.utils.book_append_sheet(wb, ws, name); };
+  add('Scores', COLS.Scores.head, COLS.Scores.keys, ATTEMPTS.slice().sort((a, b) => sortKey(a.timestamp) - sortKey(b.timestamp)), [16, 20, 26, 32, 10, 10, 10, 10, 10, 16, 8, 12, 12, 12]);
+  add('Answers', COLS.Answers.head, COLS.Answers.keys, ANSWERS, [16, 20, 32, 26, 8, 12, 18, 60, 40, 40, 10, 14, 12]);
+  add('Summary', ['ชื่อ-นามสกุล', 'อีเมล', 'ครั้งที่สอบ (Classic)', 'คะแนนสูงสุด', 'ร้อยละสูงสุด', 'สถานะ', 'สอบล่าสุด', 'เล่นโหมดอื่น (ครั้ง)'], ['name', 'email', 'attempts', 'bestPoints', 'bestPercent', 'status', 'last', 'otherPlays'],
+    summaryByPerson().map(p => ({ ...p, status: p.passed ? 'ผ่าน' : 'ยังไม่ผ่าน' })), [26, 32, 18, 12, 12, 12, 20, 18]);
+  add('QuestionStats', ['Question ID', 'หมวด', 'คำถาม', 'จำนวนครั้งที่ถูกตอบ', 'ตอบถูก', 'อัตราตอบถูก (%)', 'เวลาเฉลี่ย (วินาที)'], ['questionId', 'category', 'question', 'answered', 'correct', 'rate', 'avgTime'], questionStats(), [12, 18, 70, 18, 10, 16, 16]);
+  const d = new Date(); const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  XLSX.writeFile(wb, `${prefix === 'backup' ? 'backup-' : ''}quiz-scores-${ds}.xlsx`);
+}
+
+function renderQuestions() {
+  const q = $('#qsearch').value.trim().toLowerCase();
+  const fs = $('#qsetFilter').value;
+  const list = QUESTIONS.filter(x => (!q || x.text.toLowerCase().includes(q) || (x.category || '').toLowerCase().includes(q)) && (!fs || (fs === '-' ? !x.set : x.set === fs)));
+  const sc = k => activeQs().filter(x => x.set === k).length;
+  $('#qCount').textContent = `ทั้งหมด ${QUESTIONS.length} ข้อ · ใช้งาน ${activeQs().length} ข้อ · ชุด A ${sc('A')} · ชุด B ${sc('B')} · ชุด C ${sc('C')} · ไม่อยู่ในชุด ${activeQs().filter(x => !x.set).length}`;
+  $('#cats').innerHTML = [...new Set(QUESTIONS.map(x => x.category).filter(Boolean))].map(c => `<option value="${esc(c)}">`).join('');
+  $('#qlist').innerHTML = list.length ? list.map(x => `<div class="qitem ${x.active === false ? 'off' : ''}"><div class="body"><div class="t">${esc(x.text)}</div>
+    <div class="meta">${x.set ? `<span class="pill set-pill">ชุด ${esc(x.set)}</span>` : ''}<span class="qtype t-${qType(x)}">${TYPE_LABEL[qType(x)]}</span>${x.category ? `<span class="pill mid">${esc(x.category)}</span>` : ''}<span>✔ ${esc(qType(x) === 'num' ? x.choices[0] + ' ' + (x.choices[1] || '') : x.choices[x.answer])}</span>${x.active === false ? '<span class="pill bad">ปิดใช้งาน</span>' : ''}</div></div>
+    <div class="ops"><button class="btn btn-ghost btn-sm" data-edit="${esc(x.id)}">แก้ไข</button><button class="btn btn-danger btn-sm" data-delq="${esc(x.id)}">ลบ</button></div></div>`).join('') : '<div class="empty">ไม่พบคำถาม</div>';
+}
+async function persistQuestions(next, msg) {
+  try { await STORE.saveQuestions(next); QUESTIONS = next; toast(msg); } catch (e) { toast('บันทึกไม่สำเร็จ: ' + e.message); }
+  renderQuestions();
+}
+async function onQuestionClick(e) {
+  const { edit, delq } = e.target.dataset;
+  if (edit) openEditor(QUESTIONS.find(q => q.id === edit));
+  if (delq && await dialog({ text: 'ลบคำถามนี้?', ok: 'ลบ', danger: true })) persistQuestions(QUESTIONS.filter(q => q.id !== delq), 'ลบแล้ว');
+}
+function choiceRow(text = '', checked = false) {
+  const d = document.createElement('div'); d.className = 'choice-row';
+  d.innerHTML = `<label><input type="radio" name="answer" ${checked ? 'checked' : ''}></label><input type="text" placeholder="ตัวเลือก"><button type="button" class="btn btn-light btn-sm">✕</button>`;
+  d.querySelector('input[type=text]').value = text;
+  d.querySelector('button').onclick = () => { if ($('#choiceRows').children.length > 2) d.remove(); };
+  return d;
+}
+function openEditor(q) {
+  editingId = q?.id || null;
+  const f = $('#qForm');
+  $('#qModalTitle').textContent = q ? 'แก้ไขคำถาม' : 'เพิ่มคำถาม';
+  f.category.value = q?.category || ''; f.text.value = q?.text || ''; f.explanation.value = q?.explanation || ''; f.active.checked = q ? q.active !== false : true;
+  const t = q ? qType(q) : 'mc';
+  f.type.value = t; f.set.value = q?.set || '';
+  const rows = $('#choiceRows'); rows.innerHTML = '';
+  (q && t === 'mc' ? q.choices : ['', '', '', '']).forEach((c, i) => rows.appendChild(choiceRow(c, q && t === 'mc' ? i === q.answer : i === 0)));
+  f.querySelector(`input[name=tfAns][value="${t === 'tf' ? q.answer : 0}"]`).checked = true;
+  f.numVal.value = t === 'num' ? q.choices[0] : ''; f.numUnit.value = t === 'num' ? (q.choices[1] || '') : '';
+  setEditorType(t);
+  $('#qModal').classList.remove('hidden');
+}
+function setEditorType(t) { $('#mcBox').classList.toggle('hidden', t !== 'mc'); $('#tfBox').classList.toggle('hidden', t !== 'tf'); $('#numBox').classList.toggle('hidden', t !== 'num'); $('#numBox').style.display = t === 'num' ? 'grid' : 'none'; }
+function saveQuestion(e) {
+  e.preventDefault();
+  const f = e.target, t = f.type.value;
+  if (!f.text.value.trim()) return toast('กรุณาใส่คำถาม');
+  const base = { id: editingId || 'q' + Date.now().toString(36), type: t, category: f.category.value.trim(), text: f.text.value.trim(), explanation: f.explanation.value.trim(), active: f.active.checked, set: normSet(f.set.value) };
+  let q;
+  if (t === 'tf') q = { ...base, choices: ['ถูก', 'ผิด'], answer: Number(f.querySelector('input[name=tfAns]:checked').value) };
+  else if (t === 'num') { if (f.numVal.value === '' || !Number.isFinite(Number(f.numVal.value))) return toast('กรุณาใส่คำตอบเป็นตัวเลข'); q = { ...base, choices: [String(Number(f.numVal.value)), f.numUnit.value.trim()], answer: 0 }; }
+  if (q) { const next = editingId ? QUESTIONS.map(x => x.id === editingId ? q : x) : [...QUESTIONS, q]; $('#qModal').classList.add('hidden'); return persistQuestions(next, 'บันทึกแล้ว'); }
+  const filled = [...$('#choiceRows').children].map(r => ({ t: r.querySelector('input[type=text]').value.trim(), c: r.querySelector('input[type=radio]').checked })).filter(x => x.t);
+  const answer = filled.findIndex(x => x.c);
+  if (filled.length < 2) return toast('ต้องมีตัวเลือกอย่างน้อย 2 ข้อ');
+  if (answer < 0) return toast('กรุณาเลือกคำตอบที่ถูกต้อง');
+  q = { ...base, choices: filled.map(x => x.t), answer };
+  const next = editingId ? QUESTIONS.map(x => x.id === editingId ? q : x) : [...QUESTIONS, q];
+  $('#qModal').classList.add('hidden');
+  persistQuestions(next, 'บันทึกแล้ว');
+}
+function exportQuestions() {
+  if (!window.XLSX) return toast('โหลดไลบรารี Excel ไม่สำเร็จ');
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([COLS.Questions.head, ...QUESTIONS.map(qToRow)]);
+  ws['!cols'] = [10, 18, 60, 30, 30, 30, 30, 16, 60, 12, 16, 16].map(w => ({ wch: w }));
+  XLSX.utils.book_append_sheet(wb, ws, 'Questions');
+  XLSX.writeFile(wb, 'quiz-questions.xlsx');
+}
+async function importQuestions(e) {
+  const file = e.target.files[0]; e.target.value = ''; if (!file || !window.XLSX) return;
+  try {
+    const wb = XLSX.read(await file.arrayBuffer());
+    const aoa = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: '' }).slice(1);
+    const list = aoa.map(r => { const o = {}; COLS.Questions.keys.forEach((k, i) => o[k] = r[i]); return rowToQ(o); }).filter(Boolean);
+    if (!list.length) throw new Error('ไม่พบคำถามที่ถูกต้องในไฟล์ (ตรวจคอลัมน์และคำตอบ A-D)');
+    const replace = await dialog({ text: `พบคำถาม ${list.length} ข้อ ต้องการแทนที่คำถามเดิมทั้งหมด หรือเพิ่มต่อท้าย?`, ok: 'แทนที่ทั้งหมด', cancel: 'เพิ่มต่อท้าย' });
+    const ids = new Set(); const next = (replace ? list : [...QUESTIONS, ...list]).map(q => { let id = q.id; while (ids.has(id)) id = 'q' + Math.random().toString(36).slice(2, 9); ids.add(id); return { ...q, id }; });
+    persistQuestions(next, `นำเข้า ${list.length} ข้อสำเร็จ`);
+  } catch (err) { toast('นำเข้าไม่สำเร็จ: ' + err.message); }
+}
+
+function renderSettings() {
+  const f = $('#settingsForm');
+  const opts = Object.entries(THEMES).map(([k, t]) => `<option value="${k}">${t.icon || '🎓'} ${t.name}</option>`).join('');
+  const nowKey = parseThemeMap(SETTINGS.themeMap)[new Date().getMonth() + 1] || 'default';
+  $('#themeSel').innerHTML = `<option value="auto">📅 อัตโนมัติตามเดือน (เดือนนี้: ${THEMES[nowKey].icon} ${THEMES[nowKey].name})</option><option value="off">🎓 ปิดธีม (ใช้ธีมปกติ)</option><optgroup label="บังคับใช้ธีม">${opts.replace(/<option value="default">.*?<\/option>/, '')}</optgroup>`;
+  const map = parseThemeMap(SETTINGS.themeMap);
+  $('#monthGrid').innerHTML = MONTHS_TH.map((m, i) => `<label class="month"><span>${m}</span><select data-month="${i + 1}">${opts}</select></label>`).join('');
+  $$('#monthGrid select').forEach(sel => { sel.value = map[sel.dataset.month] || 'default'; sel.onchange = () => { if ($('#themeSel').value === 'auto' && Number(sel.dataset.month) === new Date().getMonth() + 1) { THEME_PREVIEW = sel.value; applyTheme(); } }; });
+  $('#themeSel').onchange = e => { const v = e.target.value; THEME_PREVIEW = v === 'auto' ? ($(`#monthGrid select[data-month="${new Date().getMonth() + 1}"]`).value) : v === 'off' ? 'default' : v; applyTheme(); };
+  for (const [k, v] of Object.entries(SETTINGS)) { const el = f.elements[k]; if (!el) continue; if (el.type === 'checkbox') el.checked = v; else el.value = v; }
+}
+async function saveSettings(e) {
+  e.preventDefault();
+  const f = e.target, o = {};
+  [...f.elements].forEach(el => { if (el.name) o[el.name] = el.type === 'checkbox' ? el.checked : el.value; });
+  o.themeMap = $$('#monthGrid select').map(sel => `${sel.dataset.month}:${sel.value}`).join(',');
+  const s = normSettings(o);
+  if (s.timePerQuestion < 5) return toast('เวลาต่อข้อต้องอย่างน้อย 5 วินาที');
+  if (s.questionsPerQuiz < 1) return toast('จำนวนข้อต้องอย่างน้อย 1');
+  if (s.passPercent > 100) return toast('เกณฑ์ผ่านต้องไม่เกิน 100');
+  if (s.attackSeconds < 15) return toast('เวลา Time Attack ต้องอย่างน้อย 15 วินาที');
+  if (s.survivalLives < 1 || s.survivalLives > 10) return toast('จำนวนชีวิตต้องอยู่ระหว่าง 1–10');
+  try { await STORE.saveSettings(s); SETTINGS = s; THEME_PREVIEW = null; bindSettings(); applyTheme(); renderSettings(); toast('บันทึกการตั้งค่าแล้ว'); } catch (err) { toast('บันทึกไม่สำเร็จ: ' + err.message); }
+}
+function renderSystem() {
+  const rows = [
+    ['โหมด', MODE === 'ms' ? '✅ Microsoft 365 + Excel' : '🧪 โหมดทดลอง'],
+    ['ผู้ใช้', `${ME.name} (${ME.email})`],
+    ['ไฟล์ Excel', MODE === 'ms' ? `<a href="${esc(STORE.webUrl)}" target="_blank" rel="noopener">${esc(STORE.fileName)}</a>` : 'localStorage ของเบราว์เซอร์นี้'],
+    ['ชีตในไฟล์', 'Scores · Answers · Questions · Settings'],
+    ['Redirect URI', `<code>${esc(location.origin + location.pathname)}</code>`],
+    ['Admin', esc(CONFIG.adminEmails.join(', ') || '-')],
+  ];
+  $('#sysInfo').innerHTML = rows.map(([k, v]) => `<b>${k}</b><span>${v}</span>`).join('');
+}
+
+boot();
+</script>
+</body>
+</html>
